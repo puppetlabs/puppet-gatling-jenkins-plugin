@@ -1,0 +1,13 @@
+<j:jelly xmlns:j="jelly:core" xmlns:g="/com/excilys/ebi/gatling/jenkins/tags">
+	<j:if test="${action.isVisible()}">
+		<div>
+		<h1>Puppet Gatling</h1>
+		</div>
+		<g:import/>
+		<div class="test-trend-caption">
+			Mean Agent Run Time
+			<g:graph id="customDashboardGatling" seriesNames="${action.dashboardGraph.seriesNamesJSON}"
+			         data="${action.dashboardGraph.seriesJSON}" yAxisUnit="ms" height="400px" width="500px"/>
+		</div>
+	</j:if>
+</j:jelly>

@@ -1,0 +1,14 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+         xmlns:l="/lib/layout">
+ 	<l:layout title="Build #${it.build.number}">
+    	<l:side-panel>
+      		<st:include it="${it.build}" page="sidepanel.jelly"/>
+    	</l:side-panel>
+    	<l:main-panel>
+      		<h2>${%Available Reports for this build} :</h2>
+      		<li>
+        		<a href="${it.getFilePath()}">Token File</a>
+      		</li>
+    	</l:main-panel>
+	</l:layout>
+</j:jelly>

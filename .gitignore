@@ -1,0 +1,16 @@
+.classpath
+.settings
+.project
+*.class
+
+# Package Files #
+*.war
+*.ear
+
+# Maven Specific Folders
+foo/
+graphs/
+work/
+target/
+
+.DS_STORE
