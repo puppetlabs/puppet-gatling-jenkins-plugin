@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.customartifactbuilder.chart;
+package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.chart;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
@@ -26,12 +26,12 @@ import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jenkinsci.plugins.customartifactbuilder.gatling.RequestReport;
-import org.jenkinsci.plugins.customartifactbuilder.gatling.CustomBuildAction;
 
 import com.excilys.ebi.gatling.jenkins.chart.Serie;
 import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.CustomBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.RequestReport;
 
 public abstract class Graph<Y extends Number> {
 	private static final Logger LOGGER = Logger.getLogger(Graph.class.getName());

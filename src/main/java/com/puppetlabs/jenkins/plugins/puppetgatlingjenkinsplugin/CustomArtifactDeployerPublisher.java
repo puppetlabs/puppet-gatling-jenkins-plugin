@@ -1,10 +1,10 @@
-package org.jenkinsci.plugins.customartifactbuilder;
+package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin;
 
-import org.jenkinsci.plugins.customartifactbuilder.gatling.RequestReport;
-import org.jenkinsci.plugins.customartifactbuilder.gatling.CustomBuildAction;
 
 import com.excilys.ebi.gatling.jenkins.BuildSimulation;
 import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.CustomBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.RequestReport;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,13 +20,9 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 
 import hudson.Extension;
+
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.matrix.MatrixAggregatable;
-import hudson.matrix.MatrixAggregator;
-import hudson.matrix.MatrixBuild;
-import hudson.matrix.MatrixConfiguration;
-import hudson.matrix.MatrixRun;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
@@ -42,7 +38,7 @@ import hudson.util.FormValidation;
  * Brian Cain
  * Code based off of original ArtifactDeployerPublisher
  */
-public class CustomArtifactDeployerPublisher extends Recorder implements MatrixAggregatable, Serializable{
+public class CustomArtifactDeployerPublisher extends Recorder implements Serializable{
 
     private boolean deployEvenBuildFail;
     private PrintStream logger;
@@ -62,19 +58,6 @@ public class CustomArtifactDeployerPublisher extends Recorder implements MatrixA
         return Arrays.asList(new ArtifactDeployerProjectAction(project));
     }
 	
-	public MatrixAggregator createAggregator(MatrixBuild build, Launcher launcher, BuildListener listener) {
-        return new MatrixAggregator(build, launcher, listener) {
-
-            @Override
-            public boolean endRun(MatrixRun run) throws InterruptedException, IOException {
-                boolean result = _perform(run, launcher, listener);
-                run.save();
-                return result;
-            }
-
-        };
-    }
-	
 	private boolean isPerformDeployment(AbstractBuild build) {
         Result result = build.getResult();
         if (result == null) {
@@ -91,16 +74,6 @@ public class CustomArtifactDeployerPublisher extends Recorder implements MatrixA
 	@Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		logger = listener.getLogger();
-        logger.println("[CustomArtifactDeployer] - Welcome to the custom artifact deployer post-build plugin.");
-        
-        if (!(build.getProject() instanceof MatrixConfiguration)) {
-            return _perform(build, launcher, listener);
-        }
-       
-        return true;
-    }
-	 
-	private boolean _perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
 		logger.println("[CustomArtifactDeployer] - Starting deployment from the post-action ...");
 		
 		boolean succ = getBuildAction(build, launcher, listener);
@@ -111,7 +84,7 @@ public class CustomArtifactDeployerPublisher extends Recorder implements MatrixA
 		}
 		
 		return succ;
-	}
+    }
 	
 	private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
 		logger.println("[CustomArtifactDeployer] - Going to get Gatling Build Actions...");

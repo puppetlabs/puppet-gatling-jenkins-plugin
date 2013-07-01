@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.customartifactbuilder.gatling;
+package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
 import java.io.File;
 import java.util.List;

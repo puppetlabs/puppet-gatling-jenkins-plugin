@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.customartifactbuilder.gatling;
+package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
 import hudson.model.DirectoryBrowserSupport;
 import org.kohsuke.stapler.ForwardToView;

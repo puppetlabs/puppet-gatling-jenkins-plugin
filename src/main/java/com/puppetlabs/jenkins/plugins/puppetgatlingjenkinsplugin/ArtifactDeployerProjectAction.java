@@ -1,4 +1,4 @@
-package org.jenkinsci.plugins.customartifactbuilder;
+package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin;
 
 import static com.excilys.ebi.gatling.jenkins.PluginConstants.MAX_BUILDS_TO_DISPLAY_DASHBOARD;
 import hudson.model.AbstractBuild;
@@ -8,10 +8,10 @@ import hudson.model.Run;
 
 import java.util.List;
 
-import org.jenkinsci.plugins.customartifactbuilder.chart.Graph;
-import org.jenkinsci.plugins.customartifactbuilder.gatling.RequestReport;
 
 import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.chart.Graph;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.RequestReport;
 
 /**
  * @author Gregory Boissinot
