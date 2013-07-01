@@ -30,8 +30,8 @@ import java.util.logging.Logger;
 import com.excilys.ebi.gatling.jenkins.chart.Serie;
 import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.CustomBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.RequestReport;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.SimulationReport;
 
 public abstract class Graph<Y extends Number> {
 	private static final Logger LOGGER = Logger.getLogger(Graph.class.getName());
@@ -44,13 +44,13 @@ public abstract class Graph<Y extends Number> {
 		int numberOfBuild = 0;
 		
 		for (AbstractBuild<?, ?> build : project.getBuilds()) {
-			CustomBuildAction action = build.getAction(CustomBuildAction.class);
+			PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
 			
 			if (action != null){
 				numberOfBuild++;
-				List<RequestReport> tmpList = action.getRequestReportList();
+				List<SimulationReport> tmpList = action.getRequestReportList();
 				int x = 0;
-				for (RequestReport requestR : tmpList){
+				for (SimulationReport requestR : tmpList){
 					SerieName name = new SerieName(requestR.getName());
 					if (!series.containsKey(name))
 					    series.put(name, new Serie<Integer, Y>());
@@ -85,5 +85,5 @@ public abstract class Graph<Y extends Number> {
 		return json;
 	}
 
-	protected abstract Y getValue(RequestReport requestReport);
+	protected abstract Y getValue(SimulationReport requestReport);
 }

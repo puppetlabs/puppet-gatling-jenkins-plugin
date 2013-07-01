@@ -1,10 +1,10 @@
 package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin;
 
-
+import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
 import com.excilys.ebi.gatling.jenkins.BuildSimulation;
 import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.CustomBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.RequestReport;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.SimulationReport;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,17 +35,34 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
 /*
- * Brian Cain
- * Code based off of original ArtifactDeployerPublisher
+ * PuppetGatlingPublisher
+ * 
+ * This is where the majority of the logic resides for this plugin.
+ * When added as a "post-build step" on a given job, perform() is called.
+ * It then grabs all of the GatingBuildAction objects within build which 
+ * is then extracted into a local GatlingBuildAction object. Then we 
+ * iterate over all the available reports from the GatlingBuildAction object
+ * to obtain and parse the stats.tsv file within each report. Once it's parsed,
+ * the new calculations are made for Mean Agent Run Time and Mean Catalog
+ * Compile Time. It is then added as our own Puppet Gatling Build action artifact.
+ * 
+ * Related .jelly file
+ * 	- config.jelly
+ * 
+ * config.jelly
+ * 	This file is responsible for the GUI element found when adding the plugin
+ * 	as a post-build step.
+ * 
+ * @author Brian Cain
  */
-public class CustomArtifactDeployerPublisher extends Recorder implements Serializable{
+public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
     private boolean deployEvenBuildFail;
     private PrintStream logger;
     
     // New constructor
     @DataBoundConstructor
-    public CustomArtifactDeployerPublisher(boolean deployEvenBuildFail) {
+    public PuppetGatlingPublisher(boolean deployEvenBuildFail) {
         this.deployEvenBuildFail = deployEvenBuildFail;
     }
     
@@ -55,7 +72,7 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 	
 	@Override
     public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
-        return Arrays.asList(new ArtifactDeployerProjectAction(project));
+        return Arrays.asList(new PuppetGatlingProjectAction(project));
     }
 	
 	private boolean isPerformDeployment(AbstractBuild build) {
@@ -87,7 +104,6 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
     }
 	
 	private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
-		logger.println("[CustomArtifactDeployer] - Going to get Gatling Build Actions...");
 		List<GatlingBuildAction> gba_lst = build.getActions(GatlingBuildAction.class);
 		
 		if (gba_lst.size() == 0){
@@ -97,19 +113,18 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 		int action_lst_size = action.getSimulations().size();
 		
 		
-		List<RequestReport> rrList = new ArrayList<RequestReport>();
+		List<SimulationReport> rrList = new ArrayList<SimulationReport>();
 		int simulationCounter = 0;
 		for (BuildSimulation sim : action.getSimulations()){
 			FilePath simdir = action.getSimulations().get(simulationCounter).getSimulationDirectory();
 			String stats_file_contents_path = simdir + "/stats.tsv";
 			
-			logger.println("[CustomArtifactDeployer] - It worked without errors..maybe... " + action_lst_size);
 			logger.println("[CustomArtifactDeployer] - The simulation directory is: " + simdir);
 			logger.println("[CustomArtifactDeployer] - The stats file contents path is: " + stats_file_contents_path);
 			
 			List<Integer> calcList = getCalculations(stats_file_contents_path);
 			
-			RequestReport requestReport = new RequestReport();
+			SimulationReport requestReport = new SimulationReport();
 			requestReport.setMeanAgentRunTime(calcList.get(2).longValue());
 			requestReport.setMeanCatalogCompileTime(calcList.get(1).longValue());
 			requestReport.setName(sim.getSimulationName());
@@ -117,7 +132,7 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 			rrList.add(requestReport);
 		}
 		
-		CustomBuildAction customAction = new CustomBuildAction(build, rrList);
+		PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, rrList);
 		build.addAction(customAction);
 		return true;
 	}
@@ -136,16 +151,13 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 				String line = it.nextLine();
 				String[] tmp_toke = line.split("\t");
 				if (tmp_toke[0].equals("Global Information")){
-					logger.println("[CustomArtifactDeployer] - Global Information values Total: " + tmp_toke[1]);
 					globTotal = Integer.parseInt(tmp_toke[1]);
 				}
 				else if (tmp_toke[0].equals("catalog")){
-					logger.println("[CustomArtifactDeployer] - Catalog Info Mean: " + tmp_toke[12]);
 					catMean = Integer.parseInt(tmp_toke[12]);
 					totalMean += Integer.parseInt(tmp_toke[12]);
 				}
 				else if(tmp_toke.length > 1 && !tmp_toke[0].equals("name")){
-					logger.println("[CustomArtifactDeployer] - Means: " + tmp_toke[0] + ": " + tmp_toke[12]);
 					totalMean += Integer.parseInt(tmp_toke[12]);
 				}
 			}
@@ -153,7 +165,6 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 			it.close();
 		}
 
-		logger.println("[CustomArtifactDeployer] - Here are the values parsed: \n" + globTotal + "\n" + catMean + "\n" + totalMean);
 		calcList.add(globTotal);
 		calcList.add(catMean);
 		calcList.add(totalMean);
@@ -170,7 +181,6 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 	 
 	@Extension
     public static final class CustomArtifactDeployerDescriptor extends BuildStepDescriptor<Publisher> {
-		public static final String DISPLAY_NAME = "Puppet Gatling";
 		
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
@@ -183,16 +193,5 @@ public class CustomArtifactDeployerPublisher extends Recorder implements Seriali
 			// TODO Auto-generated method stub
 			return DISPLAY_NAME;
 		}
-		
-		public FormValidation doCheckIncludes(@AncestorInPath AbstractProject project, @QueryParameter String value) throws IOException {
-            return FilePath.validateFileMask(project.getSomeWorkspace(), value);
-        }
-		
-		public FormValidation doCheckRemote(@QueryParameter String value) throws IOException {
-            if (value == null || value.trim().length() == 0) {
-                return FormValidation.error("Remote directory is mandatory.");
-            }
-            return FormValidation.ok();
-        }
 	}
 }

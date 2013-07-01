@@ -1,6 +1,13 @@
 package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
-public class RequestReport {
+/*
+ * SimulationReport
+ * 
+ * A given simulation report for Puppet Gatling
+ * 
+ * @author Brian Cain
+ */
+public class SimulationReport {
 
 	private Long meanAgentRunTime;
 	private Long meanCatalogCompileTime;

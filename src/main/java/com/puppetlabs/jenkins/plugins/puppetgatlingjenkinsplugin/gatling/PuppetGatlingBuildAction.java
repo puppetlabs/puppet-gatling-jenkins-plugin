@@ -1,5 +1,7 @@
 package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
+import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
+
 import java.io.File;
 import java.util.List;
 
@@ -9,12 +11,12 @@ import hudson.FilePath;
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
 
-public class CustomBuildAction implements Action {
+public class PuppetGatlingBuildAction implements Action {
 	
 	private final AbstractBuild<?, ?> build;
-	private final List<RequestReport> requestReportList;
+	private final List<SimulationReport> requestReportList;
 	
-	public CustomBuildAction(AbstractBuild<?, ?> build, List<RequestReport> requestReportList){
+	public PuppetGatlingBuildAction(AbstractBuild<?, ?> build, List<SimulationReport> requestReportList){
 		this.build = build;
 		this.requestReportList = requestReportList;
 	}
@@ -23,19 +25,19 @@ public class CustomBuildAction implements Action {
 		return build;
 	}
 
-	public List<RequestReport> getRequestReportList(){
+	public List<SimulationReport> getRequestReportList(){
 		return requestReportList;
 	}
 	
 	public String getIconFileName() {
-		return "/plugin/customartifactbuilder/img/puppet.png";
+		return ICON_URL;
 	}
 
 	public String getDisplayName() {
-		return "Custom Gatling";
+		return DISPLAY_NAME;
 	}
 
 	public String getUrlName() {
-		return "cgatling";
+		return URL_NAME;
 	}
 }
