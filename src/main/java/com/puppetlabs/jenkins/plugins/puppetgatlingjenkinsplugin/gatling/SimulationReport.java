@@ -1,8 +1,8 @@
 package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
-/*
+/**
  * SimulationReport
- * 
+ * <br></br>
  * A given simulation report for Puppet Gatling
  * 
  * @author Brian Cain

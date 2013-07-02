@@ -33,6 +33,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.SimulationReport;
 
+/**
+ * Graph class
+ * <br></br>
+ * This is what the plugin uses to generate graphs. The graph constructor goes through each
+ * Puppet Gatling build action to get a report. It then gets the report name and the data value
+ * and places it as a point on the given graph.
+ *
+ * @author Brian Cain
+ * @param <Y>
+ */
 public abstract class Graph<Y extends Number> {
 	private static final Logger LOGGER = Logger.getLogger(Graph.class.getName());
 

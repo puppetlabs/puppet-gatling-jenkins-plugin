@@ -1,7 +1,8 @@
 package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants;
 
-/* Constant
- * 
+/**
+ * Constant
+ * <br></br>
  * Location for important constant values related to the project
  * 
  * @author Brian Cain

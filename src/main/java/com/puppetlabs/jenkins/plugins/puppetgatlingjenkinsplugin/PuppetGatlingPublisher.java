@@ -34,25 +34,21 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
-/*
- * PuppetGatlingPublisher
- * 
+/**
+ * <h2>Puppet Gatling Publisher</h2>
+ *
  * This is where the majority of the logic resides for this plugin.
- * When added as a "post-build step" on a given job, perform() is called.
- * It then grabs all of the GatingBuildAction objects within build which 
- * is then extracted into a local GatlingBuildAction object. Then we 
- * iterate over all the available reports from the GatlingBuildAction object
- * to obtain and parse the stats.tsv file within each report. Once it's parsed,
- * the new calculations are made for Mean Agent Run Time and Mean Catalog
- * Compile Time. It is then added as our own Puppet Gatling Build action artifact.
- * 
- * Related .jelly file
- * 	- config.jelly
- * 
- * config.jelly
+ *
+ * <br></br><br></br>
+ * Related .jelly file<br></br>
+ * 	<ul>
+ * 	    <li>config.jelly</li>
+ * 	</ul>
+ *
+ * <h3>config.jelly</h3>
  * 	This file is responsible for the GUI element found when adding the plugin
  * 	as a post-build step.
- * 
+ *
  * @author Brian Cain
  */
 public class PuppetGatlingPublisher extends Recorder implements Serializable{
@@ -87,22 +83,47 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         return build.getResult().isBetterOrEqualTo(Result.UNSTABLE);
     }
-	
+
+    /**
+     * This is the entry point for where the plugin starts once a job is executed after being added as a
+     * "post-build step" on jenkins.
+     * @param build Object that contains data relating to reports, jobs, etc
+     * @param launcher
+     * @param listener Where the logger is located
+     * @return Returns true or false depending on success of getBuildAction
+     * @throws InterruptedException
+     * @throws IOException
+     */
 	@Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
 		logger = listener.getLogger();
-		logger.println("[CustomArtifactDeployer] - Starting deployment from the post-action ...");
+		logger.println("[PuppetGatling] - Starting deployment from the post-action ...");
 		
 		boolean succ = getBuildAction(build, launcher, listener);
 		
 		if (!succ){
-			logger.println("[CustomArtifactDeployer] - Get Build Action failed.");
+			logger.println("[PuppetGatling] - Get Build Action failed.");
 			return succ;
 		}
 		
 		return succ;
     }
-	
+
+    /**
+     * getbuildAction grabs all of the GatingBuildAction objects within build which
+     * is then extracted into a local GatlingBuildAction object. Then we
+     * iterate over all the available reports from the GatlingBuildAction object
+     * to obtain and parse the stats.tsv file within each report. Once it's parsed, and the calculations are made,
+     * we add the values to the simulationreport, with it's given name, and add it to our report list. That report
+     * list is then added to our build action.
+     *
+     * @param build
+     * @param launcher
+     * @param listener The logger
+     * @return boolean of if it worked or not
+     * @throws IOException
+     * @throws InterruptedException
+     */
 	private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
 		List<GatlingBuildAction> gba_lst = build.getActions(GatlingBuildAction.class);
 		
@@ -119,14 +140,17 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 			FilePath simdir = action.getSimulations().get(simulationCounter).getSimulationDirectory();
 			String stats_file_contents_path = simdir + "/stats.tsv";
 			
-			logger.println("[CustomArtifactDeployer] - The simulation directory is: " + simdir);
-			logger.println("[CustomArtifactDeployer] - The stats file contents path is: " + stats_file_contents_path);
+			logger.println("[PuppetGatling] - The simulation directory is: " + simdir);
+			logger.println("[PuppetGatling] - The stats file contents path is: " + stats_file_contents_path);
 			
 			List<Integer> calcList = getCalculations(stats_file_contents_path);
 			
 			SimulationReport requestReport = new SimulationReport();
-			requestReport.setMeanAgentRunTime(calcList.get(2).longValue());
-			requestReport.setMeanCatalogCompileTime(calcList.get(1).longValue());
+
+            logger.println("[PuppetGatling] - Mean Agent Run Time: " + calcList.get(1));
+            logger.println("[PuppetGatling] - Mean Catalog Compile Time: " + calcList.get(0));
+			requestReport.setMeanAgentRunTime(calcList.get(1).longValue());
+			requestReport.setMeanCatalogCompileTime(calcList.get(0).longValue());
 			requestReport.setName(sim.getSimulationName());
 			simulationCounter++;
 			rrList.add(requestReport);
@@ -136,13 +160,23 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 		build.addAction(customAction);
 		return true;
 	}
-	
+
+    /**
+     * Parses stats.tsv file for values:
+     *
+     * <ul>
+     *     <li>Mean Agent Run Time (a sum of all means except Global)</li>
+     *     <li>Mean Catalog Compile Time</li>
+     * </ul>
+     * @param statsFilePath
+     * @return {@code calcList} - A list of key integers needed to be added to a given SimulationReport
+     * @throws IOException
+     */
 	private List<Integer> getCalculations(String statsFilePath) throws IOException{
 		List<Integer> calcList = new ArrayList<Integer>();
 
 		LineIterator it = FileUtils.lineIterator(new File(statsFilePath));
 
-		int globTotal = 0;
 		int catMean = 0;
 		int totalMean = 0;
 
@@ -150,10 +184,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 			while(it.hasNext()){
 				String line = it.nextLine();
 				String[] tmp_toke = line.split("\t");
-				if (tmp_toke[0].equals("Global Information")){
-					globTotal = Integer.parseInt(tmp_toke[1]);
-				}
-				else if (tmp_toke[0].equals("catalog")){
+                if (tmp_toke[0].equals("catalog")){
 					catMean = Integer.parseInt(tmp_toke[12]);
 					totalMean += Integer.parseInt(tmp_toke[12]);
 				}
@@ -165,7 +196,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 			it.close();
 		}
 
-		calcList.add(globTotal);
 		calcList.add(catMean);
 		calcList.add(totalMean);
 		return calcList;
@@ -180,17 +210,15 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 	 }
 	 
 	@Extension
-    public static final class CustomArtifactDeployerDescriptor extends BuildStepDescriptor<Publisher> {
+    public static final class PuppetGatlingDescriptor extends BuildStepDescriptor<Publisher> {
 		
 		@Override
 		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-			// TODO Auto-generated method stub
 			return true;
 		}
 
 		@Override
 		public String getDisplayName() {
-			// TODO Auto-generated method stub
 			return DISPLAY_NAME;
 		}
 	}

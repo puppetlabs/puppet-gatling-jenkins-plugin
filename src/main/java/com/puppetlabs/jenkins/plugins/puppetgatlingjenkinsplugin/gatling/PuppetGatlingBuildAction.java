@@ -2,15 +2,16 @@ package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
 
-import java.io.File;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-
-import hudson.FilePath;
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
 
+/**
+ * Puppet Gatling Build Action
+ *
+ * @author Brian Cain
+ */
 public class PuppetGatlingBuildAction implements Action {
 	
 	private final AbstractBuild<?, ?> build;

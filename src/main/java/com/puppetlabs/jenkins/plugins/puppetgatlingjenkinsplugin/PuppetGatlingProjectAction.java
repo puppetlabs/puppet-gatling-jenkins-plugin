@@ -12,19 +12,24 @@ import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.chart.Graph;
 import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.*;
 
 /**
- * PuppetGatlingProjectAction
- * 
+ * <h2>Puppet Gatling Project Action</h2>
+ * <br></br>
  * This file relates to the three jelly files
- * 	- floatingBox.jelly
- * 	- index.jelly
+ *
+ * 	<ul>
+ * 	    <li>floatingBox.jelly</li>
+ * 	    <li>index.jelly</li>
+ * 	</ul>
  * 
- * floatingBox.jelly
+ * <h3>floatingBox.jelly</h3>
+ *  <br></br>
  * 	This jelly file is responsible for the side panel on any given job in Jenkins with Puppet-Gating 
  * 	installed as a plugin and added as a post build. If a build is available, it will display a 
  * 	graph on the side with Mean Agent Run Time. The jelly file calls the function below to 
  *  obtain that graph.
  *  
- * index.jelly
+ * <h3>index.jelly</h3>
+ * <br></br>
  * 	This jelly file is what will be displayed when you click on "Puppet Gatling" on the main job page.
  *  It obtains graphs similar to floatingBox.jelly, with the functions below.
  * 
