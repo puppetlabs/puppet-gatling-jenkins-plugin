@@ -99,14 +99,14 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 		logger = listener.getLogger();
 		logger.println("[PuppetGatling] - Starting deployment from the post-action ...");
 		
-		boolean succ = getBuildAction(build, launcher, listener);
+		boolean success = getBuildAction(build, launcher, listener);
 		
-		if (!succ){
+		if (!success){
 			logger.println("[PuppetGatling] - Get Build Action failed.");
-			return succ;
+			return success;
 		}
 		
-		return succ;
+		return success;
     }
 
     /**
@@ -125,16 +125,15 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @throws InterruptedException
      */
 	private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
-		List<GatlingBuildAction> gba_lst = build.getActions(GatlingBuildAction.class);
+		List<GatlingBuildAction> gatlingBuildActionList = build.getActions(GatlingBuildAction.class);
 		
-		if (gba_lst.size() == 0){
+		if (gatlingBuildActionList.size() == 0){
 			return false;
 		}
-		GatlingBuildAction action = gba_lst.get(0);
-		int action_lst_size = action.getSimulations().size();
+		GatlingBuildAction action = gatlingBuildActionList.get(0);
 		
 		
-		List<SimulationReport> rrList = new ArrayList<SimulationReport>();
+		List<SimulationReport> simulationReportList = new ArrayList<SimulationReport>();
 		int simulationCounter = 0;
 		for (BuildSimulation sim : action.getSimulations()){
 			FilePath simdir = action.getSimulations().get(simulationCounter).getSimulationDirectory();
@@ -153,10 +152,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 			requestReport.setMeanCatalogCompileTime(calcList.get(0).longValue());
 			requestReport.setName(sim.getSimulationName());
 			simulationCounter++;
-			rrList.add(requestReport);
+			simulationReportList.add(requestReport);
 		}
 		
-		PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, rrList);
+		PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, simulationReportList);
 		build.addAction(customAction);
 		return true;
 	}
