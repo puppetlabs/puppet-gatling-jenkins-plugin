@@ -1,7 +1,0 @@
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>localant</groupId>
-  <artifactId>ant-filesysten-tasks</artifactId>
-  <name>ant-filesystem-tasks</name>
-  <version>0.0.2</version>
-</project>

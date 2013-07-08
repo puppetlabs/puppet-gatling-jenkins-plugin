@@ -13,26 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jenkinsci.plugins.customartifactbuilder.chart;
+package com.puppetlabs.jenkins.plugins.puppetgatling.chart;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.jenkinsci.plugins.customartifactbuilder.gatling.RequestReport;
-import org.jenkinsci.plugins.customartifactbuilder.gatling.CustomBuildAction;
 
 import com.excilys.ebi.gatling.jenkins.chart.Serie;
 import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 
+/**
+ * Graph class
+ * <br></br>
+ * This is what the plugin uses to generate graphs. The graph constructor goes through each
+ * Puppet Gatling build action to get a report. It then gets the report name and the data value
+ * and places it as a point on the given graph.
+ *
+ * @author Brian Cain
+ * @param <Y>
+ */
 public abstract class Graph<Y extends Number> {
 	private static final Logger LOGGER = Logger.getLogger(Graph.class.getName());
 
@@ -44,13 +53,13 @@ public abstract class Graph<Y extends Number> {
 		int numberOfBuild = 0;
 		
 		for (AbstractBuild<?, ?> build : project.getBuilds()) {
-			CustomBuildAction action = build.getAction(CustomBuildAction.class);
+			PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
 			
 			if (action != null){
 				numberOfBuild++;
-				List<RequestReport> tmpList = action.getRequestReportList();
+				List<SimulationReport> tmpList = action.getRequestReportList();
 				int x = 0;
-				for (RequestReport requestR : tmpList){
+				for (SimulationReport requestR : tmpList){
 					SerieName name = new SerieName(requestR.getName());
 					if (!series.containsKey(name))
 					    series.put(name, new Serie<Integer, Y>());
@@ -85,5 +94,5 @@ public abstract class Graph<Y extends Number> {
 		return json;
 	}
 
-	protected abstract Y getValue(RequestReport requestReport);
+	protected abstract Y getValue(SimulationReport requestReport);
 }
