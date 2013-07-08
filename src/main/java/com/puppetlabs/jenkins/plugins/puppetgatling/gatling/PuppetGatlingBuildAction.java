@@ -1,6 +1,6 @@
-package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
+package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
-import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
+import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 
 import java.util.List;
 

@@ -1,10 +1,10 @@
-package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin;
+package com.puppetlabs.jenkins.plugins.puppetgatling;
 
-import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
+import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 import com.excilys.ebi.gatling.jenkins.BuildSimulation;
 import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.PuppetGatlingBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.SimulationReport;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,9 +15,7 @@ import java.util.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
 
-import org.kohsuke.stapler.AncestorInPath;
 import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 
 import hudson.Extension;
 
@@ -32,7 +30,6 @@ import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
-import hudson.util.FormValidation;
 
 /**
  * <h2>Puppet Gatling Publisher</h2>

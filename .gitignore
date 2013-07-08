@@ -1,5 +1,5 @@
 .idea/
-puppetgatlingjenkinsplugin.iml
+*.iml
 
 .classpath
 .settings

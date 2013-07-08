@@ -1,15 +1,13 @@
-package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin;
+package com.puppetlabs.jenkins.plugins.puppetgatling;
 
-import static com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.Constants.Constant.*;
+import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Run;
 
-import java.util.List;
-
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.chart.Graph;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.*;
+import com.puppetlabs.jenkins.plugins.puppetgatling.chart.Graph;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
 
 /**
  * <h2>Puppet Gatling Project Action</h2>

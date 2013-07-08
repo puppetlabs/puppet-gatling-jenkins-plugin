@@ -1,4 +1,4 @@
-package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling;
+package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
 /**
  * SimulationReport

@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.chart;
+package com.puppetlabs.jenkins.plugins.puppetgatling.chart;
 
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -30,8 +29,8 @@ import java.util.logging.Logger;
 import com.excilys.ebi.gatling.jenkins.chart.Serie;
 import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.PuppetGatlingBuildAction;
-import com.puppetlabs.jenkins.plugins.puppetgatlingjenkinsplugin.gatling.SimulationReport;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 
 /**
  * Graph class
