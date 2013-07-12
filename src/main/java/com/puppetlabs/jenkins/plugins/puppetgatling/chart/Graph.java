@@ -57,7 +57,7 @@ public abstract class Graph<Y extends Number> {
 			
 			if (action != null){
 				numberOfBuild++;
-				List<SimulationReport> tmpList = action.getRequestReportList();
+				List<SimulationReport> tmpList = action.getSimulationReportList();
 				int x = 0;
 				for (SimulationReport requestR : tmpList){
 					SerieName name = new SerieName(requestR.getName());

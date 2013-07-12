@@ -13,9 +13,29 @@
 			<h3>Mean Agent Run Time</h3>
 			<g:graph id="agentRunTime" seriesNames="${it.agentRunTime.seriesNamesJSON}"
 			         data="${it.agentRunTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
-			<h3>Mean Catalog Compile Time</h3>
+
+			<h3>Total Failed Requests</h3>
+            <g:graph id="failedRequests" seriesNames="${it.failedRequests.seriesNamesJSON}"
+                     data="${it.failedRequests.seriesJSON}" yAxisUnit="req" height="400px" width="100%"/>
+
+			<h3>Mean Catalog Response Time</h3>
 			<g:graph id="catalogCompileTime" seriesNames="${it.catalogCompileTime.seriesNamesJSON}"
 			         data="${it.catalogCompileTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
+
+			<h3>Mean Report Response Time</h3>
+            <g:graph id="reportRequestTime" seriesNames="${it.reportRequestTime.seriesNamesJSON}"
+            	     data="${it.reportRequestTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
+
+            <h2>Available Gatling reports for this build:</h2>
+            <ul>
+                <j:forEach items="${it.reports.entrySet()}" var="build">
+                    <j:forEach items="${build.value}" var="simname">
+                        <li>
+                            Build # ${build.key.number} (<fmt:formatDate value="${build.key.time}" type="both"/>) : <a href="../${it.getReportURL(build.key.number, simname)}" target="_blank">${simname}</a>
+                        </li>
+                    </j:forEach>
+                </j:forEach>
+            </ul>
 		</l:main-panel>
 	</l:layout>
 </j:jelly>

@@ -5,6 +5,7 @@ import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Run;
+import java.util.*;
 
 import com.puppetlabs.jenkins.plugins.puppetgatling.chart.Graph;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
@@ -72,7 +73,7 @@ public class PuppetGatlingProjectAction implements Action {
     	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
-				return requestReport.getMeanAgentRunTime();
+				return requestReport.getTotalMeanAgentRunTime();
 			}
 		};
     }
@@ -81,7 +82,7 @@ public class PuppetGatlingProjectAction implements Action {
     	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
-				return requestReport.getMeanAgentRunTime();
+				return requestReport.getTotalMeanAgentRunTime();
 			}
 		};
     }
@@ -90,9 +91,27 @@ public class PuppetGatlingProjectAction implements Action {
     	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
-				return requestReport.getMeanCatalogCompileTime();
+				return requestReport.getTotalMeanCatalogResponseTime();
 			}
 		};
+    }
+
+    public Graph<Long> getreportRequestTime(){
+        return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+            @Override
+            public Long getValue(SimulationReport requestReport) {
+                return requestReport.getTotalReportResponseTime();
+            }
+        };
+    }
+
+    public Graph<Long> getFailedRequests(){
+        return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+            @Override
+            public Long getValue(SimulationReport requestReport) {
+                return (long) requestReport.getTotalFailedRequests();
+            }
+        };
     }
 
     public String getIconFileName() {
@@ -106,4 +125,25 @@ public class PuppetGatlingProjectAction implements Action {
 	public String getUrlName() {
 		return URL_NAME;
 	}
+
+    public Map<AbstractBuild<?, ?>, List<String>> getReports() {
+        Map<AbstractBuild<?, ?>, List<String>> reports = new LinkedHashMap<AbstractBuild<?, ?>, List<String>>();
+
+        for (AbstractBuild<?, ?> build : project.getBuilds()) {
+            PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
+            if (action != null) {
+                List<String> simNames = new ArrayList<String>();
+                for (SimulationReport sim : action.getSimulationReportList()) {
+                    simNames.add(sim.getName());
+                }
+                reports.put(build, simNames);
+            }
+        }
+
+        return reports;
+    }
+
+    public String getReportURL(int build, String simName) {
+        return new StringBuilder().append(build).append("/").append("gatling").append("/report/").append(simName).toString();
+    }
 }
