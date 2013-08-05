@@ -41,24 +41,4 @@ public class PuppetGatlingBuildAction implements Action {
 	public String getUrlName() {
 		return URL_NAME;
 	}
-
-    public Long getCatalogResponseTime(String key, SimulationReport simulationReport){
-        for(Map.Entry entry : simulationReport.getMeanCatalogResponseTimePerNode().entrySet()){
-            if (entry.getKey().equals(key)){
-                return Long.parseLong(entry.getValue().toString());
-            }
-        }
-        return 0L;
-    }
-
-    public Long getReportResponseTime(String key, SimulationReport simulationReport){
-        for(Map.Entry entry: simulationReport.getMeanReportResponseTimePerNode().entrySet()){
-            if (entry.getKey().equals(key)){
-                return Long.parseLong(entry.getKey().toString());
-            }
-        }
-        return 0L;
-    }
-
-
 }

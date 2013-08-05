@@ -5,6 +5,8 @@ package com.puppetlabs.jenkins.plugins.puppetgatling;
  *
  * This object was created to be used within a HashMap while parsing the gatling reports, specifically stats.tsv
  *
+ * A given statistic within a simulation.
+ *
  * @author Brian Cain
  */
 public class SimulationData {

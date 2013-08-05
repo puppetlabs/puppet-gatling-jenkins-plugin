@@ -23,9 +23,6 @@ public class SimulationReport {
     private String facterData;
 
     private List<SimulationConfig> simulationConfig;
-    private Map<String, Long> meanResponseTimePerNode;
-    private Map<String, Long> meanCatalogResponseTimePerNode;
-    private Map<String, Long> meanReportResponseTimePerNode;
     private Long totalMeanAgentRunTime;
     private int totalFailedRequests;
     private Long totalMeanCatalogResponseTime;
@@ -33,6 +30,10 @@ public class SimulationReport {
     private Map<String, List<SimulationData>> simulationDataList;
 
     private Map<String, List<Map<String, Long>>> totalNodeInfo;
+
+    public Long getOtherResponseTime(){
+        return (this.totalMeanAgentRunTime - (this.totalMeanCatalogResponseTime + this.totalReportResponseTime));
+    }
 	
 	public String getName(){
 		return name;
@@ -114,14 +115,6 @@ public class SimulationReport {
         this.simulationConfig = simulationConfig;
     }
 
-    public Map<String, Long> getMeanResponseTimePerNode(){
-        return meanResponseTimePerNode;
-    }
-
-    public void setMeanResponseTimePerNode(Map<String, Long> meanResponseTimePerNode){
-        this.meanResponseTimePerNode = meanResponseTimePerNode;
-    }
-
     public Long getTotalMeanAgentRunTime(){
         return totalMeanAgentRunTime;
     }
@@ -136,22 +129,6 @@ public class SimulationReport {
 
     public void setTotalFailedRequests(int totalFailedRequests){
         this.totalFailedRequests = totalFailedRequests;
-    }
-
-    public Map<String, Long> getMeanCatalogResponseTimePerNode(){
-        return meanCatalogResponseTimePerNode;
-    }
-
-    public void setMeanCatalogResponseTimePerNode(Map<String, Long> meanCatalogResponseTimePerNode){
-        this.meanCatalogResponseTimePerNode = meanCatalogResponseTimePerNode;
-    }
-
-    public Map<String, Long> getMeanReportResponseTimePerNode(){
-        return meanReportResponseTimePerNode;
-    }
-
-    public void setMeanReportResponseTimePerNode(Map<String, Long> meanReportResponseTimePerNode){
-        this.meanReportResponseTimePerNode = meanReportResponseTimePerNode;
     }
 
     public Long getTotalMeanCatalogResponseTime(){

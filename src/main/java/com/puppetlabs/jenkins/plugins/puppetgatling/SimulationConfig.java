@@ -1,6 +1,10 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 /**
+ * SimulationConfig
+ *
+ * A quick snapshot of what a individual node simulation is configured to.
+ *
  * @author Brian Cain
  */
 public class SimulationConfig {

@@ -153,32 +153,13 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 			logger.println("[PuppetGatling] - The simulation directory is: " + simdir);
 			logger.println("[PuppetGatling] - The stats file contents path is: " + stats_file_contents_path);
 
-            // should be removed
-			List<Integer> calcList = getCalculations(stats_file_contents_path);
             // new hash with data ready to be calculated
             // This could be where I pass in the appropriate SimulationConfig data structure
             // so it can be added the Map simulationData
             simulationData = getGroupCalculations(stats_file_contents_path);
-			
-			SimulationReport simulationReport = new SimulationReport();
-            // pass in json gating info where name == sim.getSimulationName
-            // This should replace lines below up until simulationCounter++, then add tmpsimulationReport to the list
-            SimulationReport tmpsimulationReport = generateSimulationReport(new SimulationReport(), simulationData, build.getWorkspace(), sim.getSimulationName(), simConfig);
 
-            /*Map<String, List<Map<String, Long>>> maps = tmpsimulationReport.getTotalNodeInfo();
-            Set<String> keys = maps.keySet();
-            for(String key : keys){
-                logger.println("*** KEY IS: " + key);
-                List<Map<String, Long>> nodeMeans = maps.get(key);
-                for(Map<String, Long> means : nodeMeans){
-                    Set<String> meanKey = means.keySet();
-                    for(String k : meanKey){
-                        logger.println("The MRT Is: " + k + " " + means.get(k));
-                    }
-                }
-            }*/
-
-			simulationReportList.add(tmpsimulationReport);
+            SimulationReport simulationReport = generateSimulationReport(new SimulationReport(), simulationData, build.getWorkspace(), sim.getSimulationName(), simConfig);
+			simulationReportList.add(simulationReport);
 		}
 		
 		PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, simulationReportList);
@@ -212,7 +193,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                         String[] key_split = tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].split(" / ");
                         //logger.println("[PuppetGatling] - The split key is: " + key_split[0] + ", " + key_split[1]);
                         String key = key_split[0];
-                        String value = line;
                         groupDict = appendDataDictionary(groupDict, key, tmp_toke, key_split[1]);
                     }
                 }
@@ -578,47 +558,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         return simConfig;
     }
-
-    /**
-     * Parses stats.tsv file for values:
-     *
-     * <ul>
-     *     <li>Mean Agent Run Time (a sum of all means except Global)</li>
-     *     <li>Mean Catalog Compile Time</li>
-     * </ul>
-     * @param statsFilePath
-     * @return {@code calcList} - A list of key integers needed to be added to a given SimulationReport
-     * @throws IOException
-     */
-    @Deprecated
-	private List<Integer> getCalculations(String statsFilePath) throws IOException{
-		List<Integer> calcList = new ArrayList<Integer>();
-
-		LineIterator it = FileUtils.lineIterator(new File(statsFilePath));
-
-		int catMean = 0;
-		int totalMean = 0;
-
-		try{
-			while(it.hasNext()){
-				String line = it.nextLine();
-				String[] tmp_toke = line.split("\t");
-                if (tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].equals("catalog")){
-					catMean = Integer.parseInt(tmp_toke[GATLING_STATS_INDEX_MEAN_RESPONSE_TIME]);
-					totalMean += Integer.parseInt(tmp_toke[GATLING_STATS_INDEX_MEAN_RESPONSE_TIME]);
-				}
-				else if(tmp_toke.length > 1 && !tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].equals("name")){
-					totalMean += Integer.parseInt(tmp_toke[GATLING_STATS_INDEX_MEAN_RESPONSE_TIME]);
-				}
-			}
-		} finally{
-			it.close();
-		}
-
-		calcList.add(catMean);
-		calcList.add(totalMean);
-		return calcList;
-	}
 
 	 public boolean isDeployEvenBuildFail() {
 		 return deployEvenBuildFail;
