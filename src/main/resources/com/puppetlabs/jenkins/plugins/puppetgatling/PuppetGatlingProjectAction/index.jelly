@@ -13,9 +13,79 @@
 			<h3>Mean Agent Run Time</h3>
 			<g:graph id="agentRunTime" seriesNames="${it.agentRunTime.seriesNamesJSON}"
 			         data="${it.agentRunTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
-			<h3>Mean Catalog Compile Time</h3>
+
+			<h3>Total Failed Requests</h3>
+            <g:graph id="failedRequests" seriesNames="${it.failedRequests.seriesNamesJSON}"
+                     data="${it.failedRequests.seriesJSON}" yAxisUnit="req" height="400px" width="100%"/>
+
+			<h3>Mean Catalog Response Time</h3>
 			<g:graph id="catalogCompileTime" seriesNames="${it.catalogCompileTime.seriesNamesJSON}"
 			         data="${it.catalogCompileTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
+
+			<h3>Mean Report Response Time</h3>
+            <g:graph id="reportRequestTime" seriesNames="${it.reportRequestTime.seriesNamesJSON}"
+            	     data="${it.reportRequestTime.seriesJSON}" yAxisUnit="ms" height="400px" width="100%"/>
+
+            <h2>Available Gatling reports for this build:</h2>
+            <ul>
+                <j:forEach items="${it.reports.entrySet()}" var="build">
+                    <j:forEach items="${build.value}" var="simname">
+                        <li>
+                            Build # ${build.key.number} (<fmt:formatDate value="${build.key.time}" type="both"/>) : <a href="../${it.getReportURL(build.key.number, simname)}" target="_blank">${simname}</a>
+                        </li>
+                    </j:forEach>
+                </j:forEach>
+            </ul>
+
+            <script>
+                var agentSeriesNames = ${it.agentRunTime.seriesNamesJSON};
+                var agentSeriesValues = ${it.agentRunTime.seriesJSON};
+
+                $$('#agentRunTime').bind('jqplotDataClick',
+                    function (ev, seriesIndex, pointIndex, data) {
+                        var xAxisArr = agentSeriesValues[seriesIndex].reverse();
+                        var url = "../" + xAxisArr[pointIndex][0] + "/gatling/report/" + agentSeriesNames[seriesIndex].label + "/";
+                        var win = window.open(url, '_blank');
+                        win.focus();
+                    }
+                );
+
+                var failedSeriesNames = ${it.failedRequests.seriesNamesJSON};
+                var failedSeriesValues = ${it.failedRequests.seriesJSON};
+
+                $$('#failedRequests').bind('jqplotDataClick',
+                    function (ev, seriesIndex, pointIndex, data) {
+                        var xAxisArr = failedSeriesValues[seriesIndex].reverse();
+                        var url = "../" + xAxisArr[pointIndex][0] + "/gatling/report/" + failedSeriesNames[seriesIndex].label + "/";
+                        var win = window.open(url, '_blank');
+                        win.focus();
+                    }
+                );
+
+                var catalogSeriesNames = ${it.catalogCompileTime.seriesNamesJSON};
+                var catalogSeriesValues = ${it.catalogCompileTime.seriesJSON};
+
+                $$('#catalogCompileTime').bind('jqplotDataClick',
+                    function (ev, seriesIndex, pointIndex, data) {
+                        var xAxisArr = catalogSeriesValues[seriesIndex].reverse();
+                        var url = "../" + xAxisArr[pointIndex][0] + "/gatling/report/" + catalogSeriesNames[seriesIndex].label + "/";
+                        var win = window.open(url, '_blank');
+                        win.focus();
+                    }
+                );
+
+                var reportSeriesNames = ${it.reportRequestTime.seriesNamesJSON};
+                var reportSeriesValues = ${it.reportRequestTime.seriesJSON};
+
+                $$('#reportRequestTime').bind('jqplotDataClick',
+                    function (ev, seriesIndex, pointIndex, data) {
+                        var xAxisArr = reportSeriesValues[seriesIndex].reverse();
+                        var url = "../" + xAxisArr[pointIndex][0] + "/gatling/report/" + reportSeriesNames[seriesIndex].label + "/";
+                        var win = window.open(url, '_blank');
+                        win.focus();
+                    }
+                );
+            </script>
 		</l:main-panel>
 	</l:layout>
 </j:jelly>

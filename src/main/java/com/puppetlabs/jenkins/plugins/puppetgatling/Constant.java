@@ -16,23 +16,9 @@ public class Constant {
     public static final int MAX_BUILDS_TO_DISPLAY = 30;
     public static final int MAX_BUILDS_TO_DISPLAY_DASHBOARD = 15;
 
-    public String getIconUrl(){
-        return ICON_URL;
-    }
-
-    public String getDisplayName(){
-        return DISPLAY_NAME;
-    }
-
-    public String getUrlName(){
-        return URL_NAME;
-    }
-
-    public int getMaxBuildsToDisplay(){
-        return MAX_BUILDS_TO_DISPLAY;
-    }
-
-    public int getMaxBuildsToDisplayDashboard(){
-        return MAX_BUILDS_TO_DISPLAY_DASHBOARD;
-    }
+    public static final int GATLING_STATS_INDEX_GROUP_STAT = 0;
+    public static final int GATLING_STATS_INDEX_TOTAL_REQUESTS = 1;
+    public static final int GATLING_STATS_INDEX_SUCCESSFUL_REQUESTS = 2;
+    public static final int GATLING_STATS_INDEX_FAILED_REQUESTS = 3;
+    public static final int GATLING_STATS_INDEX_MEAN_RESPONSE_TIME = 10;
 }

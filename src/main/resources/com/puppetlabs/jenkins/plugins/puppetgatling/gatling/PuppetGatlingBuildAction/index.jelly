@@ -5,10 +5,148 @@
       		<st:include it="${it.build}" page="sidepanel.jelly"/>
     	</l:side-panel>
     	<l:main-panel>
+    	    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+            <script type="text/javascript">
+                google.load("visualization", "1", {packages:["corechart"]});
+            </script>
+            <script type="text/javascript">
+                google.setOnLoadCallback(drawChart);
+                function drawChart() {
+                    <j:forEach items="${it.simulationReportList}" var="sim">
+                        <j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">
+                            var options = {
+                                title: "% Breakdown of Node ${sim.name},${node.key} Requests"
+                            };
+
+                            var data = google.visualization.arrayToDataTable([
+                                ['Task', 'Percentage of MRT Agent Run'],
+                            <j:forEach items="${node.value}" var="map">
+                                <!-- if agent, display other calculation -->
+                                ['${map.entrySet().iterator().next().getKey()}', ${map.entrySet().iterator().next().getValue()}],
+                            </j:forEach>
+                            ]);
+
+                            // Create and draw the visualization.
+                            new google.visualization.PieChart(document.getElementById('${sim.name}${node.key}')).
+                                draw(data, options);
+                        </j:forEach>
+                        var data = google.visualization.arrayToDataTable([
+                            ['Task', 'Percentage of MRT Agent Run'],
+                            ['other', ${sim.otherResponseTime}],
+                            ['catalog', ${sim.totalMeanCatalogResponseTime}],
+                            ['report', ${sim.totalReportResponseTime}],
+                        ]);
+                        new google.visualization.PieChart(document.getElementById('${sim.name}')).
+                            draw(data, {title: "$ Breakdown of Simulation ${sim.name} Total Requests"});
+
+                    </j:forEach>
+
+                    <!-- var data = google.visualization.arrayToDataTable([
+                        ['Task', 'Percentage of MRT Agent Run'],
+                        ['catalog',     11],
+                        ['report',      2],
+                        ['other',       15],
+                    ]);
+
+                    var options = {
+                        title: "Breakdown of Requests"
+                    };
+
+                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
+                    chart.draw(data, options); -->
+                }
+                google.setOnLoadCallback(drawChart);
+            </script>
+    	    <h1>Puppet Gatling Information</h1>
+    	    <j:forEach items="${it.simulationReportList}" var="sim">
+                <table border="1">
+                <tr>
+                    <td><b>Simulation Name</b></td>
+                    <td>${sim.name}</td>
+                    <td rowspan="11"><div id="${sim.name}" style="width: 400px; height: 300px;"></div></td>
+                </tr>
+                <tr>
+                    <td><b>Puppet Version</b></td>
+                    <td>${sim.puppetVersion}</td>
+                </tr>
+                <tr>
+                    <td><b>Speed of CPU</b></td>
+                    <td>${sim.speedOfCPU}</td>
+                </tr>
+                <tr>
+                    <td><b>Number of CPUs</b></td>
+                    <td>${sim.numCPUs}</td>
+                 </tr>
+                <tr>
+                    <td><b>Disk Size in Bytes</b></td>
+                    <td>${sim.diskSizeBytes}</td>
+                </tr>
+                <tr>
+                    <td><b>Size of Memory</b></td>
+                    <td>${sim.memSize}</td>
+                </tr>
+                <tr>
+                    <td><b>SHA of puppet-acceptance Repository</b></td>
+                    <td>${sim.puppetAcceptanceSHA}</td>
+                </tr>
+                <tr>
+                    <td><b>SHA of gatling-puppet-load-test Repository</b></td>
+                    <td>${sim.gatlingPuppetLoadTestSHA}</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Agent Response Time</b></td>
+                    <td>${sim.totalMeanAgentRunTime} ms</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Catalog Response Time</b></td>
+                    <td>${sim.totalMeanCatalogResponseTime} ms</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Report Response Time</b></td>
+                    <td>${sim.totalReportResponseTime} ms</td>
+                </tr>
+                <j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">
+                    <tr>
+                        <td colspan="2">
+                            <table border="1">
+                                <tr>
+                                    <td colspan="2"><b>Node: ${node.key}</b></td>
+                                </tr>
+                                <j:forEach items="${node.value}" var="lst">
+                                        <j:forEach items="${lst.entrySet()}" var="val">
+                                            <tr>
+                                                <td><b>${val.key}</b></td>
+                                                <td>${val.value} ms</td>
+                                            </tr>
+                                        </j:forEach>
+                                </j:forEach>
+                            </table>
+                        </td>
+                        <td><div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div></td>
+                    </tr>
+                </j:forEach>
+                </table>
+                <p></p>
+            </j:forEach>
+
+            <h2>Pie chart</h2>
+
+            <!-- <div id="chart_div" style="width: 900px; height: 500px;"></div> -->
+
+            <!--<j:forEach items="${it.simulationReportList}" var="sim">-->
+                <!--<div id="${sim.name}" style="width: 400px; height: 300px;"></div>-->
+                <!--&lt;!&ndash;<j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">&ndash;&gt;-->
+                    <!--&lt;!&ndash;<div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div>&ndash;&gt;-->
+                <!--&lt;!&ndash;</j:forEach>&ndash;&gt;-->
+            <!--</j:forEach>-->
       		<h2>${%Available Reports for this build} :</h2>
-      		<li>
-        		<a href="${it.getFilePath()}">Token File</a>
-      		</li>
+      		<ul>
+        		<j:forEach items="${it.simulationReportList}" var="sim">
+                    <li>
+                        ${sim.name}
+                    </li>
+                </j:forEach>
+      		</ul>
     	</l:main-panel>
 	</l:layout>
 </j:jelly>

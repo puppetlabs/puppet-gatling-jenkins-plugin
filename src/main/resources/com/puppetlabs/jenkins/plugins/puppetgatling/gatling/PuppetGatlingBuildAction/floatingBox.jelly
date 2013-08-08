@@ -1,0 +1,3 @@
+<j:jelly xmlns:j="jelly:core" xmlns:g="/com/excilys/ebi/gatling/jenkins/tags">
+	<h1>Simulation Pie Charts</h1>
+</j:jelly>

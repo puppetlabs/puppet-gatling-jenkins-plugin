@@ -2,7 +2,7 @@ package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 
-import java.util.List;
+import java.util.*;
 
 import hudson.model.Action;
 import hudson.model.AbstractBuild;
@@ -15,19 +15,19 @@ import hudson.model.AbstractBuild;
 public class PuppetGatlingBuildAction implements Action {
 	
 	private final AbstractBuild<?, ?> build;
-	private final List<SimulationReport> requestReportList;
+	private final List<SimulationReport> simulationReportList;
 	
-	public PuppetGatlingBuildAction(AbstractBuild<?, ?> build, List<SimulationReport> requestReportList){
+	public PuppetGatlingBuildAction(AbstractBuild<?, ?> build, List<SimulationReport> simulationReportList){
 		this.build = build;
-		this.requestReportList = requestReportList;
+		this.simulationReportList = simulationReportList;
 	}
 	
 	public AbstractBuild<?, ?> getbuild(){
 		return build;
 	}
 
-	public List<SimulationReport> getRequestReportList(){
-		return requestReportList;
+	public List<SimulationReport> getSimulationReportList(){
+		return simulationReportList;
 	}
 	
 	public String getIconFileName() {

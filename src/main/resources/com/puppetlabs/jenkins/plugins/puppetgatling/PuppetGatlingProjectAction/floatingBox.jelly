@@ -9,5 +9,20 @@
 			<g:graph id="customDashboardGatling" seriesNames="${action.dashboardGraph.seriesNamesJSON}"
 			         data="${action.dashboardGraph.seriesJSON}" yAxisUnit="ms" height="400px" width="500px"/>
 		</div>
+
+        <script>
+
+            var dashboardSeriesNames = ${action.dashboardGraph.seriesNamesJSON};
+            var dashboardSeriesValues = ${action.dashboardGraph.seriesJSON};
+
+            $$('#customDashboardGatling').bind('jqplotDataClick',
+                function (ev, seriesIndex, pointIndex, data) {
+                    var xAxisArr = dashboardSeriesValues[seriesIndex].reverse();
+                    var url = xAxisArr[pointIndex][0] + "/gatling/report/" + dashboardSeriesNames[seriesIndex].label + "/";
+                    var win = window.open(url, '_blank');
+                    win.focus();
+                }
+            );
+        </script>
 	</j:if>
 </j:jelly>
