@@ -8,7 +8,7 @@
 
   <groupId>com.puppetlabs.jenkins.plugins</groupId>
   <artifactId>puppet-gatling-jenkins-plugin</artifactId>
-  <version>0.9.1-SNAPSHOT</version>
+  <version>1.0-SNAPSHOT</version>
   <packaging>hpi</packaging>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
