@@ -6,13 +6,12 @@ import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.*;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -133,30 +132,21 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         Map<String, List<SimulationData>> simulationData = new HashMap<String, List<SimulationData>>();
 
 		for (BuildSimulation sim : action.getSimulations()){
-            // pass in sim.getSimulationName, which will be the dir where the specific data files are located per simulation
-            //
 
-            // Look for FileUtil join method for pathing
-
-            // get all gatling json info here?
-            // maybe it can be assumed that the order they show up in the config is the order that they're executed
-            // then you can just access it by doing simConfig.get(simulationCounter) to get current numbers
             List<SimulationConfig> simConfig = getGatlingSimData(build.getWorkspace(), sim.getSimulationName());
             for (SimulationConfig sc : simConfig){
                 logger.println("[PuppetGatling] - Here are the Gatling Simulation Results for " + sim.getSimulationName() + ": " + sc.getSimulationName() + ", "
                         + sc.getNumberInstances() + ", " + sc.getNumberRepetitions());
             }
 
-			FilePath simdir = sim.getSimulationDirectory();
-			String stats_file_contents_path = simdir + "/stats.tsv";
-			
+            FilePath simdir = new FilePath(sim.getSimulationDirectory(), "stats.tsv");
+
 			logger.println("[PuppetGatling] - The simulation directory is: " + simdir);
-			logger.println("[PuppetGatling] - The stats file contents path is: " + stats_file_contents_path);
 
             // new hash with data ready to be calculated
             // This could be where I pass in the appropriate SimulationConfig data structure
             // so it can be added the Map simulationData
-            simulationData = getGroupCalculations(stats_file_contents_path);
+            simulationData = getGroupCalculations(simdir);
 
             SimulationReport simulationReport = generateSimulationReport(new SimulationReport(), simulationData, build.getWorkspace(), sim.getSimulationName(), simConfig);
 			simulationReportList.add(simulationReport);
@@ -175,10 +165,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @return - A HashMap of key String and value Array of Strings, where the key is a given group and the value is an array of stats per line from stats.tsv
      * @throws IOException
      */
-    private Map<String, List<SimulationData>> getGroupCalculations(String statsFilePath) throws IOException {
+    private Map<String, List<SimulationData>> getGroupCalculations(FilePath statsFilePath) throws IOException {
         Map<String, List<SimulationData>> groupDict = new HashMap<String, List<SimulationData>>();
 
-        LineIterator it = FileUtils.lineIterator(new File(statsFilePath));
+        LineIterator it = IOUtils.lineIterator(statsFilePath.read(), "UTF-8");
 
         try{
             while(it.hasNext()){
@@ -263,8 +253,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      */
     private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException {
         logger.println("[PuppetGatling] - Generating simulation report data...");
-        String osData = workspace + "/jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/important_data.csv";
-        LineIterator it = FileUtils.lineIterator(new File(osData));
+        FilePath osData = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/important_data.csv");
+        LineIterator it = IOUtils.lineIterator(osData.read(), "UTF-8");
 
         simReport.setName(simID);
         simReport.setSimulationDataList(simulationData);
@@ -302,8 +292,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
             logger.println("[PuppetGatling] - OS Data saved.");
         }
 
-        String facterDataPath = workspace + "/jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/facter-data.txt";
-        String facterData = FileUtils.readFileToString(new File(facterDataPath));
+        FilePath facterDataPath = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/gatling_sim_data.csv");
+        String facterData = IOUtils.toString(facterDataPath.read(), "UTF-8");
         simReport.setFacterData(facterData);
         logger.println("[PuppetGatling] - Facter data saved.");
 
@@ -531,9 +521,9 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      */
     private List<SimulationConfig> getGatlingSimData(FilePath workspace, String simID) throws IOException {
         // needs simulation name for folder name
-        String simJsonData = workspace + "/jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/gatling_sim_data.csv";
+        FilePath simJsonData = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/gatling_sim_data.csv");
         List<SimulationConfig> simConfig = new ArrayList<SimulationConfig>();
-        LineIterator it = FileUtils.lineIterator(new File(simJsonData));
+        LineIterator it = IOUtils.lineIterator(simJsonData.read(), "UTF-8");
 
         logger.println("[PuppetGatling] - Getting simulation configuration data...");
 
