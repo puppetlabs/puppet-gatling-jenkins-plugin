@@ -253,7 +253,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      */
     private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException {
         logger.println("[PuppetGatling] - Generating simulation report data...");
-        FilePath osData = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/important_data.csv");
+        FilePath osData = new FilePath(workspace, "puppet-gatling/" + simID + "/important_data.csv");
         LineIterator it = IOUtils.lineIterator(osData.read(), "UTF-8");
 
         simReport.setName(simID);
@@ -292,7 +292,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
             logger.println("[PuppetGatling] - OS Data saved.");
         }
 
-        FilePath facterDataPath = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/gatling_sim_data.csv");
+        FilePath facterDataPath = new FilePath(workspace, "puppet-gatling/" + simID + "/gatling_sim_data.csv");
         String facterData = IOUtils.toString(facterDataPath.read(), "UTF-8");
         simReport.setFacterData(facterData);
         logger.println("[PuppetGatling] - Facter data saved.");
@@ -521,7 +521,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      */
     private List<SimulationConfig> getGatlingSimData(FilePath workspace, String simID) throws IOException {
         // needs simulation name for folder name
-        FilePath simJsonData = new FilePath(workspace, "jenkins-integration/puppet-acceptance/puppet-gatling/" + simID + "/gatling_sim_data.csv");
+        FilePath simJsonData = new FilePath(workspace, "puppet-gatling/" + simID + "/gatling_sim_data.csv");
         List<SimulationConfig> simConfig = new ArrayList<SimulationConfig>();
         LineIterator it = IOUtils.lineIterator(simJsonData.read(), "UTF-8");
 
