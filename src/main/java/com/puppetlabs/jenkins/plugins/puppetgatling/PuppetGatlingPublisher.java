@@ -205,8 +205,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
-     * appendDataDictionary
-     *
      * Appends a new value onto the associated key, value array list.
      *
      * @param dict - groupDict from getGroupCalculations
@@ -236,12 +234,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
-     * generateSimulationReport
-     *
      * Generates the SimulationReport that will be added as an artifact
-     *
-     * Current workspace of project. Workspace FilePath available through build object
-     * .../puppetgatling/puppet-gatling/work/jobs/load-test-gatling/workspace/jenkins-integration/puppet-acceptance/puppet-gatling
      *
      * @param simReport
      * @param simulationData
@@ -305,31 +298,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         // do calculations
         simReport = calculateDataPerNode(simReport);
 
-        /*Map<String, Long> result = simReport.getMeanResponseTimePerNode();
-
-        for (Map.Entry entry : result.entrySet()){
-            logger.println("[PuppetGatling] - The MRT key,value is: " + entry.getKey() + ", " + entry.getValue());
-        }
-
-        Map<String, Long> catalogResult = simReport.getMeanCatalogResponseTimePerNode();
-        Map<String, Long> reportResult = simReport.getMeanReportResponseTimePerNode();
-
-        for (Map.Entry entry: catalogResult.entrySet()){
-            logger.println("[PuppetGatling] - The Catalog key,value is: " + entry.getKey() + ", " + entry.getValue());
-        }
-
-        for (Map.Entry entry: reportResult.entrySet()){
-            logger.println("[PuppetGatling] - The Report key,value is: " + entry.getKey() + ", " + entry.getValue());
-        }*/
-
         simReport = calculateDataPerSimulation(simReport);
 
         return simReport;
     }
 
     /**
-     * calculateDataPerNode
-     *
      * For each node per simulation, calculate the mean response time, add it to a dictionary where the
      * key is the node name and the value is the mean response time, then add that to the simulation report.
      *
@@ -342,9 +316,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         // should return list, since it's per node
         Long meanRunTimePerNode;
         int totalFailedRequests = 0;
-        //Map<String, Long> result = new HashMap<String, Long>();
-        //Map<String, Long> catResult = new HashMap<String, Long>();
-        //Map<String, Long> reportResult = new HashMap<String, Long>();
         Map<String, List<Map<String, Long>>> totalNodeInfo = new HashMap<String, List<Map<String, Long>>>();
 
         List<SimulationConfig> simulationConfig = simulationReport.getSimulationConfig();
@@ -362,14 +333,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
                     String cat = sd.getStat().trim();
                     if (cat.equals("catalog")){
-                        //catResult.put(sd.getKey(), (long) sd.getMeanResponseTime());
 
                         Map<String, Long> catMap = new HashMap<String, Long>();
                         catMap.put("catalog", (long) sd.getMeanResponseTime());
                         totalNodeInfo = appendTotalNodeMap(totalNodeInfo, catMap, sd.getKey());
                     }
                     else if (cat.equals("report")){
-                        //reportResult.put(sd.getKey(), (long) sd.getMeanResponseTime());
 
                         Map<String, Long> reportMap = new HashMap<String, Long>();
                         reportMap.put("report", (long) sd.getMeanResponseTime());
@@ -385,7 +354,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     int denominator = localSimConfig.getNumberInstances() * localSimConfig.getNumberRepetitions();
                     meanRunTimePerNode = (long) (numerator / denominator);
                     logger.println("[PuppetGatling] - Here is the mean run time per node of " + localSimConfig.getSimulationName() + ": " + meanRunTimePerNode);
-                    //result.put(simulationConfig.get(counter).getSimulationName(), meanRunTimePerNode);
 
                     Map<String, Long> agentMap = new HashMap<String, Long>();
                     agentMap.put("agent", meanRunTimePerNode);
@@ -398,13 +366,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         simulationReport.setTotalNodeInfo(totalNodeInfo);
 
         simulationReport.setTotalFailedRequests(totalFailedRequests);
-        //simulationReport.setMeanResponseTimePerNode(result);
-        //simulationReport.setMeanCatalogResponseTimePerNode(catResult);
-        //simulationReport.setMeanReportResponseTimePerNode(reportResult);
         return simulationReport;
     }
 
     /**
+     * Adds data to the TotalNodeMap. Has to append by grabing old list, appending new value to the list, and reseting
+     * the key to the new appended list.
      *
      * @param totalNodeInfo
      * @param dataMap
@@ -427,8 +394,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
-     * getSimConfig
-     *
      * Search through the config list for the config that matches the given key, so correct numbers are used
      * on node calculations
      *
@@ -446,6 +411,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
+     *
+     * Calculates the agent, catalog, and report total mean response time for a given simulation report.
      *
      * @param simulationReport
      * @return
@@ -475,21 +442,6 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
             denominator += (long) simConf.getNumberInstances() * simConf.getNumberRepetitions();
         }
 
-        /*for (SimulationConfig simConf : simulationReport.getSimulationConfig()){
-            Long nodeResponseTime = getResponseTime(simulationReport.getMeanResponseTimePerNode(), simConf.getSimulationName());
-            Long catalogResponseTime = getResponseTime(simulationReport.getMeanCatalogResponseTimePerNode(), simConf.getSimulationName());
-            Long reportResponseTime = getResponseTime(simulationReport.getMeanReportResponseTimePerNode(), simConf.getSimulationName());
-            if (nodeResponseTime == null){
-                logger.println("[PuppetGatling] - ERROR: getnoderesponsetime returned null");
-            }
-            else {
-                numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  nodeResponseTime;
-                catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * catalogResponseTime;
-                reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * reportResponseTime;
-                denominator += (long) simConf.getNumberInstances() * simConf.getNumberRepetitions();
-            }
-        }*/
-
         if (denominator > 0){
             simulationReport.setTotalMeanAgentRunTime((numerator / denominator));
             simulationReport.setTotalMeanCatalogResponseTime((catalogNumerator / denominator));
@@ -512,7 +464,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
-     * getGatlingSimData
+     * Finds data stored by gatling-puppet-load-test and saves it as the simulation config.
      *
      * @param workspace
      * @param simID
