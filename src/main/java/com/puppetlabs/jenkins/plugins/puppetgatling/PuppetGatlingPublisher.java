@@ -51,23 +51,23 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
     private boolean deployEvenBuildFail;
     private PrintStream logger;
-    
+
     // New constructor
     @DataBoundConstructor
     public PuppetGatlingPublisher(boolean deployEvenBuildFail) {
         this.deployEvenBuildFail = deployEvenBuildFail;
     }
-    
-	public BuildStepMonitor getRequiredMonitorService() {
-		return BuildStepMonitor.NONE;
-	}
-	
-	@Override
+
+    public BuildStepMonitor getRequiredMonitorService() {
+        return BuildStepMonitor.NONE;
+    }
+
+    @Override
     public Collection<? extends Action> getProjectActions(AbstractProject<?, ?> project) {
         return Arrays.asList(new PuppetGatlingProjectAction(project));
     }
-	
-	private boolean isPerformDeployment(AbstractBuild build) {
+
+    private boolean isPerformDeployment(AbstractBuild build) {
         Result result = build.getResult();
         if (result == null) {
             return true;
@@ -90,19 +90,19 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @throws InterruptedException
      * @throws IOException
      */
-	@Override
+    @Override
     public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
-		logger = listener.getLogger();
-		logger.println("[PuppetGatling] - Starting deployment from the post-action ...");
-		
-		boolean success = getBuildAction(build, launcher, listener);
-		
-		if (!success){
-			logger.println("[PuppetGatling] - Get Build Action failed.");
-			return success;
-		}
-		
-		return success;
+        logger = listener.getLogger();
+        logger.println("[PuppetGatling] - Starting deployment from the post-action ...");
+
+        boolean success = getBuildAction(build, launcher, listener);
+
+        if (!success){
+            logger.println("[PuppetGatling] - Get Build Action failed.");
+            return success;
+        }
+
+        return success;
     }
 
     /**
@@ -120,18 +120,18 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @throws IOException
      * @throws InterruptedException
      */
-	private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
-		List<GatlingBuildAction> gatlingBuildActionList = build.getActions(GatlingBuildAction.class);
-		
-		if (gatlingBuildActionList.size() == 0){
-			return false;
-		}
-		GatlingBuildAction action = gatlingBuildActionList.get(0);
+    private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
+        List<GatlingBuildAction> gatlingBuildActionList = build.getActions(GatlingBuildAction.class);
 
-		List<SimulationReport> simulationReportList = new ArrayList<SimulationReport>();
+        if (gatlingBuildActionList.size() == 0){
+            return false;
+        }
+        GatlingBuildAction action = gatlingBuildActionList.get(0);
+
+        List<SimulationReport> simulationReportList = new ArrayList<SimulationReport>();
         Map<String, List<SimulationData>> simulationData = new HashMap<String, List<SimulationData>>();
 
-		for (BuildSimulation sim : action.getSimulations()){
+        for (BuildSimulation sim : action.getSimulations()){
 
             List<SimulationConfig> simConfig = getGatlingSimData(build.getWorkspace(), sim.getSimulationName());
             for (SimulationConfig sc : simConfig){
@@ -141,7 +141,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
             FilePath simdir = new FilePath(sim.getSimulationDirectory(), "stats.tsv");
 
-			logger.println("[PuppetGatling] - The simulation directory is: " + simdir);
+            logger.println("[PuppetGatling] - The simulation directory is: " + simdir);
 
             // new hash with data ready to be calculated
             // This could be where I pass in the appropriate SimulationConfig data structure
@@ -149,13 +149,13 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
             simulationData = getGroupCalculations(simdir);
 
             SimulationReport simulationReport = generateSimulationReport(new SimulationReport(), simulationData, build.getWorkspace(), sim.getSimulationName(), simConfig);
-			simulationReportList.add(simulationReport);
-		}
-		
-		PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, simulationReportList);
-		build.addAction(customAction);
-		return true;
-	}
+            simulationReportList.add(simulationReport);
+        }
+
+        PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, simulationReportList);
+        build.addAction(customAction);
+        return true;
+    }
 
     /**
      * getGroupCalculations parses the stats.tsv file to separate calculation by groups, then calculates
@@ -236,12 +236,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * Generates the SimulationReport that will be added as an artifact
      *
-     * @param simReport
-     * @param simulationData
-     * @param workspace
-     * @param simID
-     * @param simConfig
-     * @return
+     * @param simReport - Given Simulation Report structure
+     * @param simulationData - List of information related to the simulation
+     * @param workspace - workspace path
+     * @param simID - Unique simulation ID
+     * @param simConfig  - List of given configs for the whole simulation
+     * @return a new simulation report
      * @throws IOException
      */
     private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException {
@@ -310,9 +310,9 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * This function also grabs a Key, Value pair for Catalog and Report response times.
      *
      * @param simulationReport  - A simulation report with relevant data stats from simulation Data
-     * @return
+     * @return a new simulation report with the calculated data
      */
-    public SimulationReport calculateDataPerNode(SimulationReport simulationReport){
+    private SimulationReport calculateDataPerNode(SimulationReport simulationReport){
         // should return list, since it's per node
         Long meanRunTimePerNode;
         int totalFailedRequests = 0;
@@ -373,12 +373,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * Adds data to the TotalNodeMap. Has to append by grabing old list, appending new value to the list, and reseting
      * the key to the new appended list.
      *
-     * @param totalNodeInfo
-     * @param dataMap
-     * @param simKey
-     * @return
+     * @param totalNodeInfo - A Map that contains all the information for all nodes in the simulation
+     * @param dataMap - Either an agent map, catalog map, or report map to append to totalNodeInfo
+     * @param simKey - Simulation key id
+     * @return total node information map with new appended data
      */
-    public Map<String, List<Map<String, Long>>> appendTotalNodeMap(Map<String, List<Map<String, Long>>> totalNodeInfo, Map<String, Long> dataMap, String simKey){
+    private Map<String, List<Map<String, Long>>> appendTotalNodeMap(Map<String, List<Map<String, Long>>> totalNodeInfo, Map<String, Long> dataMap, String simKey){
         if (!totalNodeInfo.containsKey(simKey)){
             List<Map<String, Long>> newMapList = new ArrayList<Map<String, Long>>();
             newMapList.add(dataMap);
@@ -397,11 +397,11 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * Search through the config list for the config that matches the given key, so correct numbers are used
      * on node calculations
      *
-     * @param simulationConfigList
-     * @param key
-     * @return
+     * @param simulationConfigList - A list of all the simulation configs
+     * @param key - Key we are looking for
+     * @return returns the discovered sim config, else null if not found
      */
-    public SimulationConfig getSimConfig(List<SimulationConfig> simulationConfigList, String key){
+    private SimulationConfig getSimConfig(List<SimulationConfig> simulationConfigList, String key){
         for (SimulationConfig simConf : simulationConfigList){
             if (simConf.getSimulationName().equals(key)){
                 return simConf;
@@ -414,10 +414,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      *
      * Calculates the agent, catalog, and report total mean response time for a given simulation report.
      *
-     * @param simulationReport
-     * @return
+     * @param simulationReport - A given simulation report to calculate the data with
+     * @return a new simulation report
      */
-    public SimulationReport calculateDataPerSimulation(SimulationReport simulationReport){
+    private SimulationReport calculateDataPerSimulation(SimulationReport simulationReport){
         Long numerator = 0L, denominator = 0L, catalogNumerator = 0L, reportNumerator = 0L;
 
         Map<String, List<Map<String, Long>>> maps = simulationReport.getTotalNodeInfo();
@@ -454,7 +454,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         return simulationReport;
     }
 
-    public Long getResponseTime(Map<String, Long> responseList, String key){
+    private Long getResponseTime(Map<String, Long> responseList, String key){
         for (Map.Entry entry : responseList.entrySet()){
             if (entry.getKey().equals(key)){
                 return Long.parseLong(entry.getValue().toString());
@@ -466,9 +466,9 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * Finds data stored by gatling-puppet-load-test and saves it as the simulation config.
      *
-     * @param workspace
-     * @param simID
-     * @return
+     * @param workspace - workspace directory
+     * @param simID - simulation id, used to determine where the gatling sim data is saved on disk
+     * @return - a new simulation configuration
      * @throws IOException
      */
     private List<SimulationConfig> getGatlingSimData(FilePath workspace, String simID) throws IOException {
@@ -501,25 +501,25 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         return simConfig;
     }
 
-	 public boolean isDeployEvenBuildFail() {
-		 return deployEvenBuildFail;
-	 }
+     public boolean isDeployEvenBuildFail() {
+         return deployEvenBuildFail;
+     }
 
-	 public void setDeployEvenBuildFail(boolean deployEvenBuildFail) {
-		 this.deployEvenBuildFail = deployEvenBuildFail;
-	 }
-	 
-	@Extension
+     public void setDeployEvenBuildFail(boolean deployEvenBuildFail) {
+         this.deployEvenBuildFail = deployEvenBuildFail;
+     }
+
+    @Extension
     public static final class PuppetGatlingDescriptor extends BuildStepDescriptor<Publisher> {
-		
-		@Override
-		public boolean isApplicable(Class<? extends AbstractProject> jobType) {
-			return true;
-		}
 
-		@Override
-		public String getDisplayName() {
-			return DISPLAY_NAME;
-		}
-	}
+        @Override
+        public boolean isApplicable(Class<? extends AbstractProject> jobType) {
+            return true;
+        }
+
+        @Override
+        public String getDisplayName() {
+            return DISPLAY_NAME;
+        }
+    }
 }
