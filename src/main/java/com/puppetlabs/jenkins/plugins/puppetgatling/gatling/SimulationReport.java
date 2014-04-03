@@ -29,7 +29,7 @@ public class SimulationReport {
     private Long totalReportResponseTime;
     private Map<String, List<SimulationData>> simulationDataList;
 
-    private Map<String, List<Map<String, Long>>> totalNodeInfo;
+    private Map<String, Map<String, Long>> nodeMeanResponseTimes;
 
     public Long getOtherResponseTime(){
         return (this.totalMeanAgentRunTime - (this.totalMeanCatalogResponseTime + this.totalReportResponseTime));
@@ -155,12 +155,11 @@ public class SimulationReport {
         this.simulationDataList = simulationDataList;
     }
 
-    public Map<String, List<Map<String, Long>>> getTotalNodeInfo(){
-        return totalNodeInfo;
+    public Map<String, Map<String, Long>> getNodeMeanResponseTimes(){
+        return nodeMeanResponseTimes;
     }
 
-    public void setTotalNodeInfo(Map<String, List<Map<String, Long>>> totalNodeInfo){
-        this.totalNodeInfo = totalNodeInfo;
+    public void setNodeMeanResponseTimes(Map<String, Map<String, Long>> nodeMeanResponseTimes){
+        this.nodeMeanResponseTimes = nodeMeanResponseTimes;
     }
-	
 }

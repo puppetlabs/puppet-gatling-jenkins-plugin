@@ -49,6 +49,8 @@ import hudson.tasks.Recorder;
  */
 public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
+    private static final HashSet<String> PIE_CHART_CATEGORIES = new HashSet<String>(Arrays.asList("catalog", "report"));
+
     private boolean deployEvenBuildFail;
     private PrintStream logger;
 
@@ -316,54 +318,59 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         // should return list, since it's per node
         Long meanRunTimePerNode;
         int totalFailedRequests = 0;
-        Map<String, List<Map<String, Long>>> totalNodeInfo = new HashMap<String, List<Map<String, Long>>>();
+        Map<String, Map<String, Long>> nodeMeanResponseTimes = new HashMap<String, Map<String, Long>>();
 
         List<SimulationConfig> simulationConfig = simulationReport.getSimulationConfig();
         Map<String, List<SimulationData>> simulationData = simulationReport.getSimulationDataList();
 
         int counter = 0;
-        for (Map.Entry entry : simulationData.entrySet()){;
+        for (Map.Entry entry : simulationData.entrySet()) {
             List<SimulationData> lst = simulationData.get(entry.getKey());
             int numerator = 0;
             if (lst.size() > 0){
                 logger.println("[PuppetGatling] - Getting mean run time for: " + lst.get(counter).getKey());
+
                 for (SimulationData sd : lst){
                     numerator += sd.getTotalRequests() * sd.getMeanResponseTime();
                     totalFailedRequests += sd.getFailedRequests();
 
                     String cat = sd.getStat().trim();
-                    if (cat.equals("catalog")){
-
-                        Map<String, Long> catMap = new HashMap<String, Long>();
-                        catMap.put("catalog", (long) sd.getMeanResponseTime());
-                        totalNodeInfo = appendTotalNodeMap(totalNodeInfo, catMap, sd.getKey());
-                    }
-                    else if (cat.equals("report")){
-
-                        Map<String, Long> reportMap = new HashMap<String, Long>();
-                        reportMap.put("report", (long) sd.getMeanResponseTime());
-                        totalNodeInfo = appendTotalNodeMap(totalNodeInfo, reportMap, sd.getKey());
+                    if (PIE_CHART_CATEGORIES.contains(cat)) {
+                        addNodeMeanResponseTime(nodeMeanResponseTimes, sd.getKey(), cat, (long) sd.getMeanResponseTime());
                     }
                 }
+
                 SimulationConfig localSimConfig = getSimConfig(simulationConfig, lst.get(counter).getKey());
                 if (localSimConfig == null){
                     // needs a better way to quit out of this
                     logger.println("[PuppetGatling] - ERROR: There is no sim config by that name");
+                    throw new IllegalStateException("[PuppetGatling] - ERROR: There is no sim config by that name");
                 }
                 else{
                     int denominator = localSimConfig.getNumberInstances() * localSimConfig.getNumberRepetitions();
                     meanRunTimePerNode = (long) (numerator / denominator);
                     logger.println("[PuppetGatling] - Here is the mean run time per node of " + localSimConfig.getSimulationName() + ": " + meanRunTimePerNode);
 
-                    Map<String, Long> agentMap = new HashMap<String, Long>();
-                    agentMap.put("agent", meanRunTimePerNode);
-                    totalNodeInfo = appendTotalNodeMap(totalNodeInfo, agentMap, simulationConfig.get(counter).getSimulationName());
+                    addNodeMeanResponseTime(nodeMeanResponseTimes, simulationConfig.get(counter).getSimulationName(), "agent", meanRunTimePerNode);
+
+                    // TODO: I don't know if this is exactly right.  I think that
+                    // when we're in this loop, we, are looping over the
+                    // Sims, and there may be multiple nodes in a sim?
+                    String node = simulationConfig.get(counter).getSimulationName();
+                    Map<String, Long> times = nodeMeanResponseTimes.get(node);
+                    int sum = 0;
+                    for (String cat : PIE_CHART_CATEGORIES) {
+                        sum += times.get(cat);
+                    }
+                    long otherTime = meanRunTimePerNode - sum;
+                    addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
+
                     counter++;
                 }
             }
         }
 
-        simulationReport.setTotalNodeInfo(totalNodeInfo);
+        simulationReport.setNodeMeanResponseTimes(nodeMeanResponseTimes);
 
         simulationReport.setTotalFailedRequests(totalFailedRequests);
         return simulationReport;
@@ -373,24 +380,19 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * Adds data to the TotalNodeMap. Has to append by grabing old list, appending new value to the list, and reseting
      * the key to the new appended list.
      *
-     * @param totalNodeInfo - A Map that contains all the information for all nodes in the simulation
-     * @param dataMap - Either an agent map, catalog map, or report map to append to totalNodeInfo
-     * @param simKey - Simulation key id
-     * @return total node information map with new appended data
+     * @param nodeMeanResponseTimes - A Map that contains all the information for all nodes in the simulation
+     * @param nodeName - The name of the node
+     * @param key - The name of the category of response time that we're updating
+     * @param value - The mean response time for this node in this category
      */
-    private Map<String, List<Map<String, Long>>> appendTotalNodeMap(Map<String, List<Map<String, Long>>> totalNodeInfo, Map<String, Long> dataMap, String simKey){
-        if (!totalNodeInfo.containsKey(simKey)){
-            List<Map<String, Long>> newMapList = new ArrayList<Map<String, Long>>();
-            newMapList.add(dataMap);
-            totalNodeInfo.put(simKey, newMapList);
-        }
-        else{
-            List<Map<String, Long>> nodeData = totalNodeInfo.get(simKey);
-            nodeData.add(dataMap);
-            totalNodeInfo.put(simKey, nodeData);
+    private void addNodeMeanResponseTime(Map<String, Map<String, Long>> nodeMeanResponseTimes,
+                                         String nodeName, String key, long value) {
+        // TODO: this whole method can probably go away
+        if (!nodeMeanResponseTimes.containsKey(nodeName)) {
+            nodeMeanResponseTimes.put(nodeName, new HashMap<String, Long>());
         }
 
-        return totalNodeInfo;
+        nodeMeanResponseTimes.get(nodeName).put(key, value);
     }
 
     /**
@@ -420,23 +422,21 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     private SimulationReport calculateDataPerSimulation(SimulationReport simulationReport){
         Long numerator = 0L, denominator = 0L, catalogNumerator = 0L, reportNumerator = 0L;
 
-        Map<String, List<Map<String, Long>>> maps = simulationReport.getTotalNodeInfo();
+        Map<String, Map<String, Long>> maps = simulationReport.getNodeMeanResponseTimes();
         Set<String> keys = maps.keySet();
-        for(String key : keys){
-            List<Map<String, Long>> nodeMeans = maps.get(key);
-            SimulationConfig simConf = getSimConfig(simulationReport.getSimulationConfig(), key);
-            for(Map<String, Long> means : nodeMeans){
-                Set<String> meanKey = means.keySet();
-                for(String k : meanKey){
-                    if (k.equals("agent")){
-                        numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
-                    }
-                    else if (k.equals("catalog")){
-                        catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
-                    }
-                    else if (k.equals("report")){
-                        reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
-                    }
+        for(String node : keys){
+            Map<String, Long> means = maps.get(node);
+            SimulationConfig simConf = getSimConfig(simulationReport.getSimulationConfig(), node);
+            Set<String> meanKey = means.keySet();
+            for(String k : meanKey){
+                if (k.equals("agent")){
+                    numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+                }
+                else if (k.equals("catalog")){
+                    catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+                }
+                else if (k.equals("report")){
+                    reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
                 }
             }
             denominator += (long) simConf.getNumberInstances() * simConf.getNumberRepetitions();

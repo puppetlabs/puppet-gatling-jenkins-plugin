@@ -13,22 +13,25 @@
                 google.setOnLoadCallback(drawChart);
                 function drawChart() {
                     <j:forEach items="${it.simulationReportList}" var="sim">
-                        <j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">
+                        <j:forEach items="${sim.nodeMeanResponseTimes.keySet()}" var="node">
                             var options = {
-                                title: "% Breakdown of Node ${sim.name},${node.key} Requests"
+                                title: "% Breakdown of Node ${sim.name},${node} Requests"
                             };
+
+                            var other = ${sim.nodeMeanResponseTimes.get(node).get('other')};
+                            var catalog = ${sim.nodeMeanResponseTimes.get(node).get('catalog')};
+                            var report = ${sim.nodeMeanResponseTimes.get(node).get('report')};
 
                             var data = google.visualization.arrayToDataTable([
                                 ['Task', 'Percentage of MRT Agent Run'],
-                            <j:forEach items="${node.value}" var="map">
-                                <!-- if agent, display other calculation -->
-                                ['${map.entrySet().iterator().next().getKey()}', ${map.entrySet().iterator().next().getValue()}],
-                            </j:forEach>
+                                ['other', other],
+                                ['catalog', catalog],
+                                ['report', report],
                             ]);
 
                             // Create and draw the visualization.
-                            new google.visualization.PieChart(document.getElementById('${sim.name}${node.key}')).
-                                draw(data, options);
+                            new google.visualization.PieChart(document.getElementById('${sim.name}${node}')).
+                                  draw(data, options);
                         </j:forEach>
                         var data = google.visualization.arrayToDataTable([
                             ['Task', 'Percentage of MRT Agent Run'],
@@ -40,20 +43,6 @@
                             draw(data, {title: "$ Breakdown of Simulation ${sim.name} Total Requests"});
 
                     </j:forEach>
-
-                    <!-- var data = google.visualization.arrayToDataTable([
-                        ['Task', 'Percentage of MRT Agent Run'],
-                        ['catalog',     11],
-                        ['report',      2],
-                        ['other',       15],
-                    ]);
-
-                    var options = {
-                        title: "Breakdown of Requests"
-                    };
-
-                    var chart = new google.visualization.PieChart(document.getElementById('chart_div'));
-                    chart.draw(data, options); -->
                 }
                 google.setOnLoadCallback(drawChart);
             </script>
@@ -105,20 +94,18 @@
                     <td><b>Total Mean Report Response Time</b></td>
                     <td>${sim.totalReportResponseTime} ms</td>
                 </tr>
-                <j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">
+                <j:forEach items="${sim.nodeMeanResponseTimes.entrySet()}" var="node">
                     <tr>
                         <td colspan="2">
                             <table border="1">
                                 <tr>
                                     <td colspan="2"><b>Node: ${node.key}</b></td>
                                 </tr>
-                                <j:forEach items="${node.value}" var="lst">
-                                        <j:forEach items="${lst.entrySet()}" var="val">
-                                            <tr>
-                                                <td><b>${val.key}</b></td>
-                                                <td>${val.value} ms</td>
-                                            </tr>
-                                        </j:forEach>
+                                <j:forEach items="${node.value.entrySet()}" var="entry">
+                                    <tr>
+                                        <td><b>${entry.key}</b></td>
+                                        <td>${entry.value} ms</td>
+                                    </tr>
                                 </j:forEach>
                             </table>
                         </td>
@@ -131,14 +118,6 @@
 
             <h2>Pie chart</h2>
 
-            <!-- <div id="chart_div" style="width: 900px; height: 500px;"></div> -->
-
-            <!--<j:forEach items="${it.simulationReportList}" var="sim">-->
-                <!--<div id="${sim.name}" style="width: 400px; height: 300px;"></div>-->
-                <!--&lt;!&ndash;<j:forEach items="${sim.totalNodeInfo.entrySet()}" var="node">&ndash;&gt;-->
-                    <!--&lt;!&ndash;<div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div>&ndash;&gt;-->
-                <!--&lt;!&ndash;</j:forEach>&ndash;&gt;-->
-            <!--</j:forEach>-->
       		<h2>${%Available Reports for this build} :</h2>
       		<ul>
         		<j:forEach items="${it.simulationReportList}" var="sim">
