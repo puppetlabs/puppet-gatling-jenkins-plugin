@@ -320,17 +320,19 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         int totalFailedRequests = 0;
         Map<String, Map<String, Long>> nodeMeanResponseTimes = new HashMap<String, Map<String, Long>>();
 
+        // This seems like it may be overly complex; it seems like we're keeping a handle to several
+        // different data structures when a single map might suffice.  We also probably should clean
+        // up the class / method names a bit to make it more clear what the cardinality is between
+        // a "Simulation" and a "Node".
         List<SimulationConfig> simulationConfig = simulationReport.getSimulationConfig();
         Map<String, List<SimulationData>> simulationData = simulationReport.getSimulationDataList();
 
-        int counter = 0;
-        for (Map.Entry entry : simulationData.entrySet()) {
+        for (Map.Entry<String, List<SimulationData>> entry : simulationData.entrySet()) {
             List<SimulationData> lst = simulationData.get(entry.getKey());
             int numerator = 0;
             if (lst.size() > 0){
-                logger.println("[PuppetGatling] - Getting mean run time for: " + lst.get(counter).getKey());
-
                 for (SimulationData sd : lst){
+                    logger.println("[PuppetGatling] - Getting mean run time for: " + sd.getKey());
                     numerator += sd.getTotalRequests() * sd.getMeanResponseTime();
                     totalFailedRequests += sd.getFailedRequests();
 
@@ -340,7 +342,16 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     }
                 }
 
-                SimulationConfig localSimConfig = getSimConfig(simulationConfig, lst.get(counter).getKey());
+                logger.println("Here are the mean response times:");
+                for (String node : nodeMeanResponseTimes.keySet()) {
+                    logger.println("\tNODE: '" + node + "'");
+                    for (String cat : nodeMeanResponseTimes.get(node).keySet()) {
+                        logger.println("\t\t" + cat + ": '" + nodeMeanResponseTimes.get(node).get(cat) + "'");
+                    }
+                }
+
+
+                SimulationConfig localSimConfig = getSimConfig(simulationConfig, entry.getKey());
                 if (localSimConfig == null){
                     // needs a better way to quit out of this
                     logger.println("[PuppetGatling] - ERROR: There is no sim config by that name");
@@ -351,21 +362,21 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     meanRunTimePerNode = (long) (numerator / denominator);
                     logger.println("[PuppetGatling] - Here is the mean run time per node of " + localSimConfig.getSimulationName() + ": " + meanRunTimePerNode);
 
-                    addNodeMeanResponseTime(nodeMeanResponseTimes, simulationConfig.get(counter).getSimulationName(), "agent", meanRunTimePerNode);
+
+                    addNodeMeanResponseTime(nodeMeanResponseTimes, getSimConfig(simulationConfig, entry.getKey()).getSimulationName(), "agent", meanRunTimePerNode);
 
                     // TODO: I don't know if this is exactly right.  I think that
                     // when we're in this loop, we, are looping over the
                     // Sims, and there may be multiple nodes in a sim?
-                    String node = simulationConfig.get(counter).getSimulationName();
+                    String node = getSimConfig(simulationConfig, entry.getKey()).getSimulationName();
                     Map<String, Long> times = nodeMeanResponseTimes.get(node);
                     int sum = 0;
                     for (String cat : PIE_CHART_CATEGORIES) {
+                        logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
                         sum += times.get(cat);
                     }
                     long otherTime = meanRunTimePerNode - sum;
                     addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
-
-                    counter++;
                 }
             }
         }
