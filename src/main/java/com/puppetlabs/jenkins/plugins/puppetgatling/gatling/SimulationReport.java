@@ -18,7 +18,7 @@ public class SimulationReport {
     private String puppetVersion;
     private String diskSizeBytes;
     private String memSize;
-    private String puppetAcceptanceSHA;
+    private String beakerVersion;
     private String gatlingPuppetLoadTestSHA;
     private String facterData;
 
@@ -83,12 +83,12 @@ public class SimulationReport {
         this.memSize = memSize;
     }
 
-    public String getPuppetAcceptanceSHA(){
-        return puppetAcceptanceSHA;
+    public String getBeakerVersion(){
+        return beakerVersion;
     }
 
-    public void setPuppetAcceptanceSHA(String puppetAcceptanceSHA){
-        this.puppetAcceptanceSHA = puppetAcceptanceSHA;
+    public void setBeakerVersion(String beakerVersion){
+        this.beakerVersion = beakerVersion;
     }
 
     public String getGatlingPuppetLoadTestSHA(){

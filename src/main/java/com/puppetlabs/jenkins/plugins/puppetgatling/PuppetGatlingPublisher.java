@@ -272,8 +272,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                 else if (key.equals("puppetversion")){
                     simReport.setPuppetVersion(osStatistic);
                 }
-                else if (key.equals("puppet-acceptance")){
-                    simReport.setPuppetAcceptanceSHA(osStatistic);
+                else if (key.equals("beaker-version")){
+                    simReport.setBeakerVersion(osStatistic);
                 }
                 else if (key.equals("gatling-puppet-load-test")){
                     simReport.setGatlingPuppetLoadTestSHA(osStatistic);

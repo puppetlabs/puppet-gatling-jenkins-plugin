@@ -75,8 +75,8 @@
                     <td>${sim.memSize}</td>
                 </tr>
                 <tr>
-                    <td><b>SHA of puppet-acceptance Repository</b></td>
-                    <td>${sim.puppetAcceptanceSHA}</td>
+                    <td><b>Beaker Version</b></td>
+                    <td>${sim.beakerVersion}</td>
                 </tr>
                 <tr>
                     <td><b>SHA of gatling-puppet-load-test Repository</b></td>
@@ -122,7 +122,7 @@
       		<ul>
         		<j:forEach items="${it.simulationReportList}" var="sim">
                     <li>
-                        ${sim.name}
+                        <a href="../gatling/report/${sim.name}">${sim.name}</a>
                     </li>
                 </j:forEach>
       		</ul>
