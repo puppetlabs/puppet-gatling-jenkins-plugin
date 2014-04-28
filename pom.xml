@@ -8,7 +8,7 @@
 
   <groupId>com.puppetlabs.jenkins.plugins</groupId>
   <artifactId>puppet-gatling-jenkins-plugin</artifactId>
-  <version>0.9.4-SNAPSHOT</version>
+  <version>0.9.4</version>
   <packaging>hpi</packaging>
 
   <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
@@ -18,6 +18,19 @@
       <url>http://repo.jenkins-ci.org/public/</url>
     </repository>
   </repositories>
+
+  <distributionManagement>
+    <repository>
+       <id>deployment</id>
+       <name>Internal Releases</name>
+       <url>http://nexus.delivery.puppetlabs.net:8081/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+       <id>deployment</id>
+       <name>Internal Releases</name>
+       <url>http://nexus.delivery.puppetlabs.net:8081/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 
   <pluginRepositories>
     <pluginRepository>
