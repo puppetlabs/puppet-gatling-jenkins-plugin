@@ -372,8 +372,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     Map<String, Long> times = nodeMeanResponseTimes.get(node);
                     int sum = 0;
                     for (String cat : PIE_CHART_CATEGORIES) {
-                        logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
-                        sum += times.get(cat);
+                        try {
+                            logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
+                            sum += times.get(cat);
+                        } catch (NullPointerException e) {
+                            logger.println("[PuppetGatling] - ERROR: The report data seems to be incomplete or mal-formed.  Please review the \"" + cat + "\" request metrics in stats.tsv.  Exception: " + e);
+                        }
                     }
                     long otherTime = meanRunTimePerNode - sum;
                     addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
