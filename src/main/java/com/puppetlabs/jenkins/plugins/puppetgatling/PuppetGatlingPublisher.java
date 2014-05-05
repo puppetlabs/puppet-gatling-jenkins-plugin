@@ -1,6 +1,7 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
+
 import com.excilys.ebi.gatling.jenkins.BuildSimulation;
 import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
@@ -32,22 +33,22 @@ import hudson.tasks.Recorder;
 
 /**
  * <h2>Puppet Gatling Publisher</h2>
- *
+ * <p/>
  * This is where the majority of the logic resides for this plugin.
- *
+ * <p/>
  * <br></br><br></br>
  * Related .jelly file<br></br>
- * 	<ul>
- * 	    <li>config.jelly</li>
- * 	</ul>
- *
+ * <ul>
+ * <li>config.jelly</li>
+ * </ul>
+ * <p/>
  * <h3>config.jelly</h3>
- * 	This file is responsible for the GUI element found when adding the plugin
- * 	as a post-build step.
+ * This file is responsible for the GUI element found when adding the plugin
+ * as a post-build step.
  *
  * @author Brian Cain
  */
-public class PuppetGatlingPublisher extends Recorder implements Serializable{
+public class PuppetGatlingPublisher extends Recorder implements Serializable {
 
     private static final HashSet<String> PIE_CHART_CATEGORIES = new HashSet<String>(Arrays.asList("catalog", "report"));
 
@@ -85,7 +86,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * This is the entry point for where the plugin starts once a job is executed after being added as a
      * "post-build step" on jenkins.
-     * @param build Object that contains data relating to reports, jobs, etc
+     *
+     * @param build    Object that contains data relating to reports, jobs, etc
      * @param launcher
      * @param listener Where the logger is located
      * @return Returns true or false depending on success of getBuildAction
@@ -99,7 +101,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         boolean success = getBuildAction(build, launcher, listener);
 
-        if (!success){
+        if (!success) {
             logger.println("[PuppetGatling] - Get Build Action failed.");
             return success;
         }
@@ -122,10 +124,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @throws IOException
      * @throws InterruptedException
      */
-    private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
+    private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException {
         List<GatlingBuildAction> gatlingBuildActionList = build.getActions(GatlingBuildAction.class);
 
-        if (gatlingBuildActionList.size() == 0){
+        if (gatlingBuildActionList.size() == 0) {
             return false;
         }
         GatlingBuildAction action = gatlingBuildActionList.get(0);
@@ -133,10 +135,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         List<SimulationReport> simulationReportList = new ArrayList<SimulationReport>();
         Map<String, List<SimulationData>> simulationData = new HashMap<String, List<SimulationData>>();
 
-        for (BuildSimulation sim : action.getSimulations()){
+        for (BuildSimulation sim : action.getSimulations()) {
 
             List<SimulationConfig> simConfig = getGatlingSimData(build.getWorkspace(), sim.getSimulationName());
-            for (SimulationConfig sc : simConfig){
+            for (SimulationConfig sc : simConfig) {
                 logger.println("[PuppetGatling] - Here are the Gatling Simulation Results for " + sim.getSimulationName() + ": " + sc.getSimulationName() + ", "
                         + sc.getNumberInstances() + ", " + sc.getNumberRepetitions());
             }
@@ -172,16 +174,15 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         LineIterator it = IOUtils.lineIterator(statsFilePath.read(), "UTF-8");
 
-        try{
-            while(it.hasNext()){
+        try {
+            while (it.hasNext()) {
                 String line = it.nextLine();
                 String[] tmp_toke = line.split("\t");
-                if (!tmp_toke[0].equals("name") && tmp_toke.length > 1){
-                    if (!tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].contains("/")){
+                if (!tmp_toke[0].equals("name") && tmp_toke.length > 1) {
+                    if (!tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].contains("/")) {
                         String key = tmp_toke[GATLING_STATS_INDEX_GROUP_STAT];
                         groupDict = appendDataDictionary(groupDict, key, tmp_toke, "");
-                    }
-                    else {
+                    } else {
                         String[] key_split = tmp_toke[GATLING_STATS_INDEX_GROUP_STAT].split(" / ");
                         //logger.println("[PuppetGatling] - The split key is: " + key_split[0] + ", " + key_split[1]);
                         String key = key_split[0];
@@ -189,15 +190,16 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     }
                 }
             }
-        } finally{
+        } finally {
             it.close();
         }
 
         logger.println("[PuppetGatling] - The hash map is below.");
         logger.println("[PuppetGatling] - The values are printed as: [Total Requests, Successful Requests, Failed Requests, Mean Response Time]");
-        for (Map.Entry entry : groupDict.entrySet()){;
+        for (Map.Entry entry : groupDict.entrySet()) {
+            ;
             List<SimulationData> lst = groupDict.get(entry.getKey());
-            for (SimulationData sd : lst){
+            for (SimulationData sd : lst) {
                 logger.println("[PuppetGatling] - The hash map key, value is: " + entry.getKey() + ", " + sd.prettyPrint());
             }
 
@@ -209,17 +211,16 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * Appends a new value onto the associated key, value array list.
      *
-     * @param dict - groupDict from getGroupCalculations
-     * @param key - the given group from stats.tsv
+     * @param dict   - groupDict from getGroupCalculations
+     * @param key    - the given group from stats.tsv
      * @param tokens - a line of text from stats.tsv
-     * @param stat - given stat that gatling recorded
+     * @param stat   - given stat that gatling recorded
      * @return appended dictionary
      */
-    private Map<String, List<SimulationData>> appendDataDictionary(Map<String, List<SimulationData>> dict, String key, String[] tokens, String stat){
-        if (!dict.containsKey(key)){
+    private Map<String, List<SimulationData>> appendDataDictionary(Map<String, List<SimulationData>> dict, String key, String[] tokens, String stat) {
+        if (!dict.containsKey(key)) {
             dict.put(key, new ArrayList<SimulationData>());
-        }
-        else {
+        } else {
             List<SimulationData> values = dict.get(key);
             int totalRequests = Integer.parseInt(tokens[GATLING_STATS_INDEX_TOTAL_REQUESTS]);
             int succReq = Integer.parseInt(tokens[GATLING_STATS_INDEX_SUCCESSFUL_REQUESTS]);
@@ -238,11 +239,11 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * Generates the SimulationReport that will be added as an artifact
      *
-     * @param simReport - Given Simulation Report structure
+     * @param simReport      - Given Simulation Report structure
      * @param simulationData - List of information related to the simulation
-     * @param workspace - workspace path
-     * @param simID - Unique simulation ID
-     * @param simConfig  - List of given configs for the whole simulation
+     * @param workspace      - workspace path
+     * @param simID          - Unique simulation ID
+     * @param simConfig      - List of given configs for the whole simulation
      * @return a new simulation report
      * @throws IOException
      */
@@ -254,35 +255,29 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         simReport.setName(simID);
         simReport.setSimulationDataList(simulationData);
 
-        try{
-            while(it.hasNext()){
+        try {
+            while (it.hasNext()) {
                 String line = it.nextLine();
                 String[] tokens = line.split(",");
                 String key = tokens[0];
                 String osStatistic = tokens[1];
-                if (key.equals("memorysize")){
+                if (key.equals("memorysize")) {
                     simReport.setMemSize(osStatistic);
-                }
-                else if (key.equals("processor0")){
+                } else if (key.equals("processor0")) {
                     simReport.setSpeedOfCPU(osStatistic);
-                }
-                else if (key.equals("processorcount")){
+                } else if (key.equals("processorcount")) {
                     simReport.setNumCPUs(osStatistic);
-                }
-                else if (key.equals("puppetversion")){
+                } else if (key.equals("puppetversion")) {
                     simReport.setPuppetVersion(osStatistic);
-                }
-                else if (key.equals("beaker-version")){
+                } else if (key.equals("beaker-version")) {
                     simReport.setBeakerVersion(osStatistic);
-                }
-                else if (key.equals("gatling-puppet-load-test")){
+                } else if (key.equals("gatling-puppet-load-test")) {
                     simReport.setGatlingPuppetLoadTestSHA(osStatistic);
-                }
-                else if (key.equals("blockdevice_sda_size")){
+                } else if (key.equals("blockdevice_sda_size")) {
                     simReport.setDiskSizeBytes(osStatistic);
                 }
             }
-        } finally{
+        } finally {
             it.close();
             logger.println("[PuppetGatling] - OS Data saved.");
         }
@@ -308,13 +303,13 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * For each node per simulation, calculate the mean response time, add it to a dictionary where the
      * key is the node name and the value is the mean response time, then add that to the simulation report.
-     *
+     * <p/>
      * This function also grabs a Key, Value pair for Catalog and Report response times.
      *
-     * @param simulationReport  - A simulation report with relevant data stats from simulation Data
+     * @param simulationReport - A simulation report with relevant data stats from simulation Data
      * @return a new simulation report with the calculated data
      */
-    private SimulationReport calculateDataPerNode(SimulationReport simulationReport){
+    private SimulationReport calculateDataPerNode(SimulationReport simulationReport) {
         // should return list, since it's per node
         Long meanRunTimePerNode;
         int totalFailedRequests = 0;
@@ -330,8 +325,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         for (Map.Entry<String, List<SimulationData>> entry : simulationData.entrySet()) {
             List<SimulationData> lst = simulationData.get(entry.getKey());
             int numerator = 0;
-            if (lst.size() > 0){
-                for (SimulationData sd : lst){
+            if (lst.size() > 0) {
+                for (SimulationData sd : lst) {
                     logger.println("[PuppetGatling] - Getting mean run time for: " + sd.getKey());
                     numerator += sd.getTotalRequests() * sd.getMeanResponseTime();
                     totalFailedRequests += sd.getFailedRequests();
@@ -352,12 +347,11 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
 
                 SimulationConfig localSimConfig = getSimConfig(simulationConfig, entry.getKey());
-                if (localSimConfig == null){
+                if (localSimConfig == null) {
                     // needs a better way to quit out of this
                     logger.println("[PuppetGatling] - ERROR: There is no sim config by that name");
                     throw new IllegalStateException("[PuppetGatling] - ERROR: There is no sim config by that name");
-                }
-                else{
+                } else {
                     int denominator = localSimConfig.getNumberInstances() * localSimConfig.getNumberRepetitions();
                     meanRunTimePerNode = (long) (numerator / denominator);
                     logger.println("[PuppetGatling] - Here is the mean run time per node of " + localSimConfig.getSimulationName() + ": " + meanRunTimePerNode);
@@ -372,34 +366,35 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     Map<String, Long> times = nodeMeanResponseTimes.get(node);
                     int sum = 0;
                     for (String cat : PIE_CHART_CATEGORIES) {
-                        try {
+                        if (times.containsKey(cat)) {
                             logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
                             sum += times.get(cat);
-                        } catch (NullPointerException e) {
-                            logger.println("[PuppetGatling] - ERROR: The report data seems to be incomplete or mal-formed.  Please review the \"" + cat + "\" request metrics in stats.tsv.  Exception: " + e);
+                        } else {
+                            logger.println("[PuppetGatling] - ERROR: Request \"" + cat + "\" does not have an associated time.  The request likely failed.");
                         }
                     }
-                    long otherTime = meanRunTimePerNode - sum;
-                    addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
+                        long otherTime = meanRunTimePerNode - sum;
+                        addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
+                    }
                 }
             }
+
+            simulationReport.setNodeMeanResponseTimes(nodeMeanResponseTimes);
+
+            simulationReport.setTotalFailedRequests(totalFailedRequests);
+            return simulationReport;
         }
 
-        simulationReport.setNodeMeanResponseTimes(nodeMeanResponseTimes);
+        /**
+         * Adds data to the TotalNodeMap. Has to append by grabing old list, appending new value to the list, and reseting
+         * the key to the new appended list.
+         *
+         * @param nodeMeanResponseTimes - A Map that contains all the information for all nodes in the simulation
+         * @param nodeName - The name of the node
+         * @param key - The name of the category of response time that we're updating
+         * @param value - The mean response time for this node in this category
+         */
 
-        simulationReport.setTotalFailedRequests(totalFailedRequests);
-        return simulationReport;
-    }
-
-    /**
-     * Adds data to the TotalNodeMap. Has to append by grabing old list, appending new value to the list, and reseting
-     * the key to the new appended list.
-     *
-     * @param nodeMeanResponseTimes - A Map that contains all the information for all nodes in the simulation
-     * @param nodeName - The name of the node
-     * @param key - The name of the category of response time that we're updating
-     * @param value - The mean response time for this node in this category
-     */
     private void addNodeMeanResponseTime(Map<String, Map<String, Long>> nodeMeanResponseTimes,
                                          String nodeName, String key, long value) {
         // TODO: this whole method can probably go away
@@ -415,12 +410,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * on node calculations
      *
      * @param simulationConfigList - A list of all the simulation configs
-     * @param key - Key we are looking for
+     * @param key                  - Key we are looking for
      * @return returns the discovered sim config, else null if not found
      */
-    private SimulationConfig getSimConfig(List<SimulationConfig> simulationConfigList, String key){
-        for (SimulationConfig simConf : simulationConfigList){
-            if (simConf.getSimulationName().equals(key)){
+    private SimulationConfig getSimConfig(List<SimulationConfig> simulationConfigList, String key) {
+        for (SimulationConfig simConf : simulationConfigList) {
+            if (simConf.getSimulationName().equals(key)) {
                 return simConf;
             }
         }
@@ -428,36 +423,33 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     }
 
     /**
-     *
      * Calculates the agent, catalog, and report total mean response time for a given simulation report.
      *
      * @param simulationReport - A given simulation report to calculate the data with
      * @return a new simulation report
      */
-    private SimulationReport calculateDataPerSimulation(SimulationReport simulationReport){
+    private SimulationReport calculateDataPerSimulation(SimulationReport simulationReport) {
         Long numerator = 0L, denominator = 0L, catalogNumerator = 0L, reportNumerator = 0L;
 
         Map<String, Map<String, Long>> maps = simulationReport.getNodeMeanResponseTimes();
         Set<String> keys = maps.keySet();
-        for(String node : keys){
+        for (String node : keys) {
             Map<String, Long> means = maps.get(node);
             SimulationConfig simConf = getSimConfig(simulationReport.getSimulationConfig(), node);
             Set<String> meanKey = means.keySet();
-            for(String k : meanKey){
-                if (k.equals("agent")){
-                    numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
-                }
-                else if (k.equals("catalog")){
-                    catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
-                }
-                else if (k.equals("report")){
-                    reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+            for (String k : meanKey) {
+                if (k.equals("agent")) {
+                    numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * means.get(k);
+                } else if (k.equals("catalog")) {
+                    catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * means.get(k);
+                } else if (k.equals("report")) {
+                    reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * means.get(k);
                 }
             }
             denominator += (long) simConf.getNumberInstances() * simConf.getNumberRepetitions();
         }
 
-        if (denominator > 0){
+        if (denominator > 0) {
             simulationReport.setTotalMeanAgentRunTime((numerator / denominator));
             simulationReport.setTotalMeanCatalogResponseTime((catalogNumerator / denominator));
             simulationReport.setTotalReportResponseTime((reportNumerator / denominator));
@@ -469,9 +461,9 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         return simulationReport;
     }
 
-    private Long getResponseTime(Map<String, Long> responseList, String key){
-        for (Map.Entry entry : responseList.entrySet()){
-            if (entry.getKey().equals(key)){
+    private Long getResponseTime(Map<String, Long> responseList, String key) {
+        for (Map.Entry entry : responseList.entrySet()) {
+            if (entry.getKey().equals(key)) {
                 return Long.parseLong(entry.getValue().toString());
             }
         }
@@ -482,7 +474,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * Finds data stored by gatling-puppet-load-test and saves it as the simulation config.
      *
      * @param workspace - workspace directory
-     * @param simID - simulation id, used to determine where the gatling sim data is saved on disk
+     * @param simID     - simulation id, used to determine where the gatling sim data is saved on disk
      * @return - a new simulation configuration
      * @throws IOException
      */
@@ -494,10 +486,10 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         logger.println("[PuppetGatling] - Getting simulation configuration data...");
 
-        try{
-            while(it.hasNext()){
+        try {
+            while (it.hasNext()) {
                 String line = it.nextLine();
-                if (line.length() > 0){
+                if (line.length() > 0) {
                     String[] tokens = line.split(",");
 
                     String simulationName = tokens[0];
@@ -508,7 +500,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                 }
             }
 
-        } finally{
+        } finally {
             it.close();
             logger.println("[PuppetGatling] - Got it!");
         }
@@ -516,13 +508,13 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
         return simConfig;
     }
 
-     public boolean isDeployEvenBuildFail() {
-         return deployEvenBuildFail;
-     }
+    public boolean isDeployEvenBuildFail() {
+        return deployEvenBuildFail;
+    }
 
-     public void setDeployEvenBuildFail(boolean deployEvenBuildFail) {
-         this.deployEvenBuildFail = deployEvenBuildFail;
-     }
+    public void setDeployEvenBuildFail(boolean deployEvenBuildFail) {
+        this.deployEvenBuildFail = deployEvenBuildFail;
+    }
 
     @Extension
     public static final class PuppetGatlingDescriptor extends BuildStepDescriptor<Publisher> {
