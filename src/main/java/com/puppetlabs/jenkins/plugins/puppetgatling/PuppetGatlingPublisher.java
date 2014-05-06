@@ -372,8 +372,12 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
                     Map<String, Long> times = nodeMeanResponseTimes.get(node);
                     int sum = 0;
                     for (String cat : PIE_CHART_CATEGORIES) {
-                        logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
-                        sum += times.get(cat);
+                        if (times.containsKey(cat)) {
+                            logger.println("About to look up time for node '" + node + "', cat: '" + cat + "'");
+                            sum += times.get(cat);
+                        } else {
+                            logger.println("[PuppetGatling] - ERROR: Request \"" + cat + "\" does not have an associated time.  The request likely failed.");
+                        }
                     }
                     long otherTime = meanRunTimePerNode - sum;
                     addNodeMeanResponseTime(nodeMeanResponseTimes, node, "other", otherTime);
