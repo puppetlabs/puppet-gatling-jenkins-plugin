@@ -52,3 +52,9 @@ Now that we have the packaged plugin, we must upload it to the Jenkins server. T
 ## Note About Release
 
 After a couple of minor fixes that need to be made to the plugin, we are planning on doing a release to either Maven Central and or the Jenkins-CI wiki (...or other relevant plugin hosts). Once this has happened we will update this portion of the README for more information on how to obtain the latest build.
+
+## Maintainence
+
+Maintainers: Chris Price <chris@puppet.com>, Matthaus Owens <matthaus@puppet.com>, Ruth Linehan <ruth@puppet.com>
+
+Tickets: https://tickets.puppetlabs.com/browse/PE. Set component = Puppet Server
