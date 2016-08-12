@@ -1,3 +1,5 @@
+<?jelly escape-by-default='true'?>
+
 <j:jelly xmlns:j="jelly:core" xmlns:g="/com/excilys/ebi/gatling/jenkins/tags">
 	<j:if test="${action.isVisible()}">
 		<div>

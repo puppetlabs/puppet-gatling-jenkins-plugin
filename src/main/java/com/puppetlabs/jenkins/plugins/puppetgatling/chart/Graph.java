@@ -26,11 +26,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import com.excilys.ebi.gatling.jenkins.chart.Serie;
-import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
+import io.gatling.jenkins.chart.Serie;
+import io.gatling.jenkins.chart.SerieName;
 
 /**
  * Graph class

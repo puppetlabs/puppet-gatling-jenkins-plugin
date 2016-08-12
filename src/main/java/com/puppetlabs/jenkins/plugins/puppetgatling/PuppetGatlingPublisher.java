@@ -1,8 +1,6 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
-import com.excilys.ebi.gatling.jenkins.BuildSimulation;
-import com.excilys.ebi.gatling.jenkins.GatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 
@@ -11,6 +9,8 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.*;
 
+import io.gatling.jenkins.BuildSimulation;
+import io.gatling.jenkins.GatlingBuildAction;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
@@ -167,7 +167,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @return - A HashMap of key String and value Array of Strings, where the key is a given group and the value is an array of stats per line from stats.tsv
      * @throws IOException
      */
-    private Map<String, List<SimulationData>> getGroupCalculations(FilePath statsFilePath) throws IOException {
+    private Map<String, List<SimulationData>> getGroupCalculations(FilePath statsFilePath) throws IOException, InterruptedException {
         Map<String, List<SimulationData>> groupDict = new HashMap<String, List<SimulationData>>();
 
         LineIterator it = IOUtils.lineIterator(statsFilePath.read(), "UTF-8");
@@ -246,7 +246,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @return a new simulation report
      * @throws IOException
      */
-    private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException {
+    private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException, InterruptedException {
         logger.println("[PuppetGatling] - Generating simulation report data...");
         FilePath osData = new FilePath(workspace, "puppet-gatling/" + simID + "/important_data.csv");
         LineIterator it = IOUtils.lineIterator(osData.read(), "UTF-8");
@@ -486,7 +486,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @return - a new simulation configuration
      * @throws IOException
      */
-    private List<SimulationConfig> getGatlingSimData(FilePath workspace, String simID) throws IOException {
+    private List<SimulationConfig> getGatlingSimData(FilePath workspace, String simID) throws IOException, InterruptedException {
         // needs simulation name for folder name
         FilePath simJsonData = new FilePath(workspace, "puppet-gatling/" + simID + "/gatling_sim_data.csv");
         List<SimulationConfig> simConfig = new ArrayList<SimulationConfig>();
