@@ -5,7 +5,7 @@ import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 import java.util.*;
 
 import hudson.model.Action;
-import hudson.model.AbstractBuild;
+import hudson.model.Run;
 
 /**
  * Puppet Gatling Build Action
@@ -14,16 +14,16 @@ import hudson.model.AbstractBuild;
  */
 public class PuppetGatlingBuildAction implements Action {
 	
-	private final AbstractBuild<?, ?> build;
+	private final Run<?, ?> run;
 	private final List<SimulationReport> simulationReportList;
 	
-	public PuppetGatlingBuildAction(AbstractBuild<?, ?> build, List<SimulationReport> simulationReportList){
-		this.build = build;
+	public PuppetGatlingBuildAction(Run<?, ?> run, List<SimulationReport> simulationReportList){
+		this.run = run;
 		this.simulationReportList = simulationReportList;
 	}
 	
-	public AbstractBuild<?, ?> getbuild(){
-		return build;
+	public Run<?, ?> getRun(){
+		return run;
 	}
 
 	public List<SimulationReport> getSimulationReportList(){

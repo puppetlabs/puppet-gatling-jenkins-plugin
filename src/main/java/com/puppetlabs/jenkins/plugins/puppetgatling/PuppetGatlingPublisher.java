@@ -9,8 +9,11 @@ import java.io.PrintStream;
 import java.io.Serializable;
 import java.util.*;
 
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import io.gatling.jenkins.BuildSimulation;
 import io.gatling.jenkins.GatlingBuildAction;
+import jenkins.tasks.SimpleBuildStep;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.io.LineIterator;
 
@@ -30,6 +33,8 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 
+import javax.annotation.Nonnull;
+
 /**
  * <h2>Puppet Gatling Publisher</h2>
  *
@@ -47,7 +52,7 @@ import hudson.tasks.Recorder;
  *
  * @author Brian Cain
  */
-public class PuppetGatlingPublisher extends Recorder implements Serializable{
+public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep {
 
     private static final HashSet<String> PIE_CHART_CATEGORIES = new HashSet<String>(Arrays.asList("catalog", "report"));
 
@@ -85,7 +90,8 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
     /**
      * This is the entry point for where the plugin starts once a job is executed after being added as a
      * "post-build step" on jenkins.
-     * @param build Object that contains data relating to reports, jobs, etc
+     * @param run Object that contains data relating to reports, jobs, etc
+     * @param workspace
      * @param launcher
      * @param listener Where the logger is located
      * @return Returns true or false depending on success of getBuildAction
@@ -93,18 +99,16 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * @throws IOException
      */
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+    public void perform(@Nonnull Run<?, ?> run, @Nonnull FilePath workspace, @Nonnull Launcher launcher, @Nonnull TaskListener listener) throws InterruptedException, IOException {
         logger = listener.getLogger();
         logger.println("[PuppetGatling] - Starting deployment from the post-action ...");
 
-        boolean success = getBuildAction(build, launcher, listener);
+        boolean success = getBuildAction(run, workspace);
 
         if (!success){
             logger.println("[PuppetGatling] - Get Build Action failed.");
-            return success;
+            run.setResult(Result.FAILURE);
         }
-
-        return success;
     }
 
     /**
@@ -115,15 +119,14 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
      * we add the values to the simulationreport, with it's given name, and add it to our report list. That report
      * list is then added to our build action.
      *
-     * @param build
-     * @param launcher
-     * @param listener The logger
+     * @param run
+     * @param workspace
      * @return boolean of if it worked or not
      * @throws IOException
      * @throws InterruptedException
      */
-    private boolean getBuildAction(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws IOException, InterruptedException{
-        List<GatlingBuildAction> gatlingBuildActionList = build.getActions(GatlingBuildAction.class);
+    private boolean getBuildAction(Run<?, ?> run, FilePath workspace) throws IOException, InterruptedException{
+        List<GatlingBuildAction> gatlingBuildActionList = run.getActions(GatlingBuildAction.class);
 
         if (gatlingBuildActionList.size() == 0){
             return false;
@@ -135,7 +138,7 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
 
         for (BuildSimulation sim : action.getSimulations()){
 
-            List<SimulationConfig> simConfig = getGatlingSimData(build.getWorkspace(), sim.getSimulationName());
+            List<SimulationConfig> simConfig = getGatlingSimData(workspace, sim.getSimulationName());
             for (SimulationConfig sc : simConfig){
                 logger.println("[PuppetGatling] - Here are the Gatling Simulation Results for " + sim.getSimulationName() + ": " + sc.getSimulationName() + ", "
                         + sc.getNumberInstances() + ", " + sc.getNumberRepetitions());
@@ -150,12 +153,14 @@ public class PuppetGatlingPublisher extends Recorder implements Serializable{
             // so it can be added the Map simulationData
             simulationData = getGroupCalculations(simdir);
 
-            SimulationReport simulationReport = generateSimulationReport(new SimulationReport(), simulationData, build.getWorkspace(), sim.getSimulationName(), simConfig);
+            SimulationReport simulationReport = generateSimulationReport(new SimulationReport(),
+                    simulationData, workspace, sim.getSimulationName(), simConfig);
             simulationReportList.add(simulationReport);
         }
 
-        PuppetGatlingBuildAction customAction = new PuppetGatlingBuildAction(build, simulationReportList);
-        build.addAction(customAction);
+        PuppetGatlingBuildAction customAction =
+                new PuppetGatlingBuildAction(run, simulationReportList);
+        run.addAction(customAction);
         return true;
     }
 
