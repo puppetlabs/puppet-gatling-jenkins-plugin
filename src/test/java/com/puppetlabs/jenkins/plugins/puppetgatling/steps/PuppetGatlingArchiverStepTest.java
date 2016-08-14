@@ -24,7 +24,7 @@ public class PuppetGatlingArchiverStepTest extends Assert {
         WorkflowJob foo = j.jenkins.createProject(WorkflowJob.class, "foo");
         foo.setDefinition(new CpsFlowDefinition(StringUtils.join(Arrays.asList(
                 "node {",
-                "  echo 'hi'",
+                "  puppetGatlingArchive()",
                 "}"), "\n")));
 
         // get the build going, and wait until workflow pauses
