@@ -29,6 +29,8 @@ import java.util.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
+import hudson.model.Job;
+import hudson.model.Run;
 import io.gatling.jenkins.chart.Serie;
 import io.gatling.jenkins.chart.SerieName;
 
@@ -49,11 +51,11 @@ public abstract class Graph<Y extends Number> {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public Graph(AbstractProject<?, ?> project, int maxBuildsToDisplay) {
+	public Graph(Job<?, ?> job, int maxBuildsToDisplay) {
 		int numberOfBuild = 0;
 		
-		for (AbstractBuild<?, ?> build : project.getBuilds()) {
-			PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
+		for (Run<?, ?> run : job.getBuilds()) {
+			PuppetGatlingBuildAction action = run.getAction(PuppetGatlingBuildAction.class);
 			
 			if (action != null){
 				numberOfBuild++;
@@ -63,7 +65,7 @@ public abstract class Graph<Y extends Number> {
 					if (!series.containsKey(name))
 					    series.put(name, new Serie<Integer, Y>());
 					
-					series.get(name).addPoint(build.getNumber(), getValue(requestR));
+					series.get(name).addPoint(run.getNumber(), getValue(requestR));
 				}
 			}
 			if (numberOfBuild >= maxBuildsToDisplay)
