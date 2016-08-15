@@ -35,6 +35,19 @@ Again, on the first run this may take some time to set up, but once it does it s
 
 ### Setup on Jenkins
 
+### Creating a bunk job just to test the plugin via `mvnDebug hpi:run`
+
+```
+node {
+    sh 'pwd'
+    echo 'hi'
+    sh 'rm -rf ./simulation-runner/results/*'
+    sh 'sleep 1'
+    sh 'cp -r /home/cprice/work/puppet-server/git/puppet-gatling-jenkins-plugin/src/test/resources/com/puppetlabs/jenkins/plugins/puppetgatling/steps/PuppetGatlingArchiverStepTest/workspace/* .'
+    puppetGatlingArchive()
+}
+```
+
 ### Note On Development
 
 If you wish to modify the code for this plugin, I highly suggest using IntelliJ IDEA Community Edition. It's a free IDE that plays really nice with the Jenkins plugin code. There are some gross tricks that you have to do if you want to use an IDE like Eclipse, where as with IntelliJ you do not. Both work, but I found that IntelliJ worked better for this project.

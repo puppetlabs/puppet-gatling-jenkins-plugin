@@ -1,8 +1,6 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 import hudson.model.Action;
 import hudson.model.Job;
 import hudson.model.Run;
@@ -50,7 +48,7 @@ public class PuppetGatlingProjectAction implements Action {
     public Job<?, ?> getJob() {
     	return job;
     }
-    
+
     public boolean isVisible() {
 		for (Run<?, ?> run: getJob().getBuilds()) {
 			PuppetGatlingBuildAction gatlingBuildAction = run.getAction(PuppetGatlingBuildAction.class);

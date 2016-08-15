@@ -1,0 +1,127 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
+         xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
+         xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+    <t:summary icon="/plugin/gatling/img/logo.png">
+        <b>Available Reports:</b>
+        <ul>
+            <j:forEach items="${it.simulations}" var="sim">
+                <li>
+                    <a href="${it.getReportURL(sim.simulationName)}">${sim.simulationName}</a>
+                </li>
+            </j:forEach>
+        </ul>
+    </t:summary>
+    <t:summary icon="/plugin/puppet-gatling-jenkins-plugin/img/puppet.png">
+        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript">
+            google.load("visualization", "1", {packages:["corechart"]});
+        </script>
+        <script type="text/javascript">
+            google.setOnLoadCallback(drawChart);
+            function drawChart() {
+            <j:forEach items="${it.simulationReportList}" var="sim">
+                <j:forEach items="${sim.nodeMeanResponseTimes.keySet()}" var="node">
+                    var options = {
+                    title: "% Breakdown of Node ${sim.name},${node} Requests"
+                    };
+
+                    var other = ${sim.nodeMeanResponseTimes.get(node).get('other')};
+                    var catalog = ${sim.nodeMeanResponseTimes.get(node).get('catalog')};
+                    var report = ${sim.nodeMeanResponseTimes.get(node).get('report')};
+
+                    var data = google.visualization.arrayToDataTable([
+                    ['Task', 'Percentage of MRT Agent Run'],
+                    ['other', other],
+                    ['catalog', catalog],
+                    ['report', report],
+                    ]);
+
+                    // Create and draw the visualization.
+                    new google.visualization.PieChart(document.getElementById('${sim.name}${node}')).
+                    draw(data, options);
+                </j:forEach>
+                var data = google.visualization.arrayToDataTable([
+                ['Task', 'Percentage of MRT Agent Run'],
+                ['other', ${sim.otherResponseTime}],
+                ['catalog', ${sim.totalMeanCatalogResponseTime}],
+                ['report', ${sim.totalReportResponseTime}],
+                ]);
+                new google.visualization.PieChart(document.getElementById('${sim.name}')).
+                draw(data, {title: "$ Breakdown of Simulation ${sim.name} Total Requests"});
+
+            </j:forEach>
+            }
+            google.setOnLoadCallback(drawChart);
+        </script>
+        <h1>Puppet Gatling Information</h1>
+        <j:forEach items="${it.simulationReportList}" var="sim">
+            <table border="1">
+                <tr>
+                    <td><b>Simulation Name</b></td>
+                    <td>${sim.name}</td>
+                    <td rowspan="11"><div id="${sim.name}" style="width: 400px; height: 300px;"></div></td>
+                </tr>
+                <tr>
+                    <td><b>Puppet Version</b></td>
+                    <td>${sim.puppetVersion}</td>
+                </tr>
+                <tr>
+                    <td><b>Speed of CPU</b></td>
+                    <td>${sim.speedOfCPU}</td>
+                </tr>
+                <tr>
+                    <td><b>Number of CPUs</b></td>
+                    <td>${sim.numCPUs}</td>
+                </tr>
+                <tr>
+                    <td><b>Disk Size in Bytes</b></td>
+                    <td>${sim.diskSizeBytes}</td>
+                </tr>
+                <tr>
+                    <td><b>Size of Memory</b></td>
+                    <td>${sim.memSize}</td>
+                </tr>
+                <tr>
+                    <td><b>Beaker Version</b></td>
+                    <td>${sim.beakerVersion}</td>
+                </tr>
+                <tr>
+                    <td><b>SHA of gatling-puppet-load-test Repository</b></td>
+                    <td>${sim.gatlingPuppetLoadTestSHA}</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Agent Response Time</b></td>
+                    <td>${sim.totalMeanAgentRunTime} ms</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Catalog Response Time</b></td>
+                    <td>${sim.totalMeanCatalogResponseTime} ms</td>
+                </tr>
+                <tr>
+                    <td><b>Total Mean Report Response Time</b></td>
+                    <td>${sim.totalReportResponseTime} ms</td>
+                </tr>
+                <j:forEach items="${sim.nodeMeanResponseTimes.entrySet()}" var="node">
+                    <tr>
+                        <td colspan="2">
+                            <table border="1">
+                                <tr>
+                                    <td colspan="2"><b>Node: ${node.key}</b></td>
+                                </tr>
+                                <j:forEach items="${node.value.entrySet()}" var="entry">
+                                    <tr>
+                                        <td><b>${entry.key}</b></td>
+                                        <td>${entry.value} ms</td>
+                                    </tr>
+                                </j:forEach>
+                            </table>
+                        </td>
+                        <td><div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div></td>
+                    </tr>
+                </j:forEach>
+            </table>
+            <p></p>
+        </j:forEach>
+    </t:summary>
+</j:jelly>

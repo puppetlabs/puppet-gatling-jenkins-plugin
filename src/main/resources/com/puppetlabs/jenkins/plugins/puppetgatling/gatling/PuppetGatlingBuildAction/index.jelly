@@ -2,9 +2,9 @@
 
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
          xmlns:l="/lib/layout">
- 	<l:layout title="Build #${it.build.number}">
+ 	<l:layout title="Build #${it.run.number}">
     	<l:side-panel>
-      		<st:include it="${it.build}" page="sidepanel.jelly"/>
+      		<st:include it="${it.run}" page="sidepanel.jelly"/>
     	</l:side-panel>
     	<l:main-panel>
     	    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
@@ -48,6 +48,14 @@
                 }
                 google.setOnLoadCallback(drawChart);
             </script>
+            <h2>${%Available Reports for this run}:</h2>
+            <ul>
+                <j:forEach items="${it.simulations}" var="sim">
+                    <li>
+                        <a href="${it.getReportURL(sim.simulationName)}">${sim.simulationName}</a>
+                    </li>
+                </j:forEach>
+            </ul>
     	    <h1>Puppet Gatling Information</h1>
     	    <j:forEach items="${it.simulationReportList}" var="sim">
                 <table border="1">
@@ -118,16 +126,6 @@
                 <p></p>
             </j:forEach>
 
-            <h2>Pie chart</h2>
-
-      		<h2>${%Available Reports for this build} :</h2>
-      		<ul>
-        		<j:forEach items="${it.simulationReportList}" var="sim">
-                    <li>
-                        <a href="../gatling/report/${sim.name}">${sim.name}</a>
-                    </li>
-                </j:forEach>
-      		</ul>
     	</l:main-panel>
 	</l:layout>
 </j:jelly>

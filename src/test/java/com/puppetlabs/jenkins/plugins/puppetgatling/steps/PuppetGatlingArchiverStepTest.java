@@ -9,9 +9,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class PuppetGatlingArchiverStepTest extends Assert {
+
+    private static final String RESOURCES_DIR = "./src/test/resources/com/puppetlabs/jenkins/plugins/puppetgatling/steps/PuppetGatlingArchiverStepTest";
+
     @Rule
     public JenkinsRule j = new JenkinsRule();
 
@@ -22,8 +26,12 @@ public class PuppetGatlingArchiverStepTest extends Assert {
     public void archive() throws Exception {
         // job setup
         WorkflowJob foo = j.jenkins.createProject(WorkflowJob.class, "foo");
+        String sampleWorkspaceDir = new File(RESOURCES_DIR, "workspace").getAbsolutePath();
         foo.setDefinition(new CpsFlowDefinition(StringUtils.join(Arrays.asList(
                 "node {",
+                "  sh 'pwd'",
+                "  sh 'cp -r " + sampleWorkspaceDir + "/* .'",
+                "  sh 'ls -l'",
                 "  puppetGatlingArchive()",
                 "}"), "\n")));
 
