@@ -199,7 +199,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
         try {
             cx.setLanguageVersion(Context.VERSION_1_8);
             Scriptable scope = cx.initStandardObjects();
-            Object result = cx.evaluateReader(scope, new InputStreamReader(statsJsFilePath.read()),
+            Object result = cx.evaluateReader(scope, new InputStreamReader(statsJsFilePath.read(), "UTF-8"),
                     "stats.js", 1, null);
             stats = (Map) scope.get("stats", scope);
 
@@ -390,10 +390,10 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
                 }
 
                 logger.println("Here are the mean response times:");
-                for (String node : nodeMeanResponseTimes.keySet()) {
-                    logger.println("\tNODE: '" + node + "'");
-                    for (String cat : nodeMeanResponseTimes.get(node).keySet()) {
-                        logger.println("\t\t" + cat + ": '" + nodeMeanResponseTimes.get(node).get(cat) + "'");
+                for (Map.Entry<String, Map<String, Long>> node : nodeMeanResponseTimes.entrySet()) {
+                    logger.println("\tNODE: '" + node.getKey() + "'");
+                    for (String cat : node.getValue().keySet()) {
+                        logger.println("\t\t" + cat + ": '" + node.getValue().get(cat) + "'");
                     }
                 }
 
@@ -484,20 +484,22 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
         Long numerator = 0L, denominator = 0L, catalogNumerator = 0L, reportNumerator = 0L;
 
         Map<String, Map<String, Long>> maps = simulationReport.getNodeMeanResponseTimes();
-        Set<String> keys = maps.keySet();
-        for(String node : keys){
-            Map<String, Long> means = maps.get(node);
-            SimulationConfig simConf = getSimConfig(simulationReport.getSimulationConfig(), node);
-            Set<String> meanKey = means.keySet();
-            for(String k : meanKey){
-                if (k.equals("agent")){
-                    numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+        Set<Map.Entry<String, Map<String, Long>>> responseTimeEntrySet = maps.entrySet();
+        for(Map.Entry<String, Map<String, Long>> nodeEntry : responseTimeEntrySet){
+            Map<String, Long> means = nodeEntry.getValue();
+            SimulationConfig simConf = getSimConfig(simulationReport.getSimulationConfig(), nodeEntry.getKey());
+            Set<Map.Entry<String, Long>> meanEntrySet = means.entrySet();
+            for(Map.Entry<String, Long> meanEntry : meanEntrySet){
+                String meanKey = meanEntry.getKey();
+                Long meanValue = meanEntry.getValue();
+                if (meanKey.equals("agent")){
+                    numerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * meanValue;
                 }
-                else if (k.equals("catalog")){
-                    catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+                else if (meanKey.equals("catalog")){
+                    catalogNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * meanValue;
                 }
-                else if (k.equals("report")){
-                    reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) *  means.get(k);
+                else if (meanKey.equals("report")){
+                    reportNumerator += (simConf.getNumberInstances() * simConf.getNumberRepetitions()) * meanValue;
                 }
             }
             denominator += (long) simConf.getNumberInstances() * simConf.getNumberRepetitions();

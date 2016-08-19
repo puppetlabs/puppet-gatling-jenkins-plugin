@@ -56,14 +56,14 @@ public class SimulationData {
      * @return result - String to print out
      */
     public String prettyPrint(){
-        String whitespace = "";
+        StringBuffer whitespace = new StringBuffer();
         int needed = 39-this.requestName.length();
 
         for(int i = 0; i<= needed + 3; i++){
-            whitespace += " ";
+            whitespace.append(" ");
         }
 
-        String result = this.key + " " + this.requestName + whitespace + "[" + this.totalRequests + ",    " + this.successfulRequests + ",    " + this.failedRequests + ",    " +
+        String result = this.key + " " + this.requestName + whitespace.toString() + "[" + this.totalRequests + ",    " + this.successfulRequests + ",    " + this.failedRequests + ",    " +
                 this.meanResponseTime + "]";
         return result;
     }

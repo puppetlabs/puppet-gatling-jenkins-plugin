@@ -31,4 +31,6 @@ public class PuppetGatlingArchiverStepExecution extends AbstractSynchronousNonBl
 
         return null;
     }
+
+    private static final long serialVersionUID = 1L;
 }
