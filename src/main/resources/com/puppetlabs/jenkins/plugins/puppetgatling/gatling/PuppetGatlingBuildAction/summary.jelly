@@ -13,7 +13,7 @@
         </ul>
     </t:summary>
     <t:summary icon="/plugin/puppet-gatling-jenkins-plugin/img/puppet.png">
-        <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+        <script type="text/javascript" src="../../../plugin/puppet-gatling-jenkins-plugin/js/google-jsapi.js"></script>
         <script type="text/javascript">
             google.load("visualization", "1", {packages:["corechart"]});
         </script>
