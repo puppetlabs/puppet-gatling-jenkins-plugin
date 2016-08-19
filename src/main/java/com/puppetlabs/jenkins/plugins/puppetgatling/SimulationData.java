@@ -11,15 +11,15 @@ package com.puppetlabs.jenkins.plugins.puppetgatling;
  */
 public class SimulationData {
     private String key;
-    private String stat;
+    private String requestName;
     private int totalRequests;
     private int successfulRequests;
     private int failedRequests;
     private int meanResponseTime;
 
-    public SimulationData(String key, String stat, int totalRequests, int successfulRequests, int failedRequests, int meanResponseTime){
+    public SimulationData(String key, String requestName, int totalRequests, int successfulRequests, int failedRequests, int meanResponseTime){
         this.key = key;
-        this.stat = stat;
+        this.requestName = requestName;
         this.totalRequests = totalRequests;
         this.successfulRequests = successfulRequests;
         this.failedRequests = failedRequests;
@@ -30,8 +30,8 @@ public class SimulationData {
         return key;
     }
 
-    public String getStat(){
-        return stat;
+    public String getRequestName(){
+        return requestName;
     }
 
     public int getTotalRequests(){
@@ -57,13 +57,13 @@ public class SimulationData {
      */
     public String prettyPrint(){
         String whitespace = "";
-        int needed = 39-this.stat.length();
+        int needed = 39-this.requestName.length();
 
         for(int i = 0; i<= needed + 3; i++){
             whitespace += " ";
         }
 
-        String result = this.key + " " + this.stat + whitespace + "[" + this.totalRequests + ",    " + this.successfulRequests + ",    " + this.failedRequests + ",    " +
+        String result = this.key + " " + this.requestName + whitespace + "[" + this.totalRequests + ",    " + this.successfulRequests + ",    " + this.failedRequests + ",    " +
                 this.meanResponseTime + "]";
         return result;
     }

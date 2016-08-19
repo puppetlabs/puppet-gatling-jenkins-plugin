@@ -135,7 +135,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
 
 
         List<SimulationReport> simulationReportList = new ArrayList<SimulationReport>();
-        Map<String, List<SimulationData>> simulationData;
+        Map<String, NodeSimulationData> simulationData;
 
         for (BuildSimulation sim : simulations){
 
@@ -173,12 +173,12 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
      * @return - A HashMap of key String and value Array of Strings, where the key is a given group and the value is an array of stats per line from stats.tsv
      * @throws IOException
      */
-    private Map<String, List<SimulationData>> getGroupCalculations(FilePath statsJsFilePath) throws IOException, InterruptedException {
+    private Map<String, NodeSimulationData> getGroupCalculations(FilePath statsJsFilePath) throws IOException, InterruptedException {
 
         // TODO: the data structures in here could really use some cleanup / simplification,
         //  but for now I'm trying to touch as little code as possible to get things
         //  up and running with Gatling 2.0.
-        Map<String, List<SimulationData>> groupDict = new HashMap<String, List<SimulationData>>();
+        Map<String, NodeSimulationData> groupDict = new HashMap<String, NodeSimulationData>();
 
         // NOTE: This would be the preferred way to do the Javascript evaluation,
         // but something about the Jenkins classloader is causing it to return
@@ -214,13 +214,13 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
 
             if (type.equals("GROUP")) {
                 String group = (String) contentEntryMap.get("name");
-                ArrayList<SimulationData> simDataList = new ArrayList<SimulationData>();
+                SimulationData groupData = parseSimulationData(group, "", (Map) contentEntryMap.get("stats"));
 
-                simDataList.add(parseSimulationData(group, "", (Map) contentEntryMap.get("stats")));
+                ArrayList<SimulationData> requestData = new ArrayList<SimulationData>();
 
-                simDataList.addAll(parseRequestStats(group, (Map) contentEntryMap.get("contents")));
+                requestData.addAll(parseRequestStats(group, (Map) contentEntryMap.get("contents")));
 
-                groupDict.put(group, simDataList);
+                groupDict.put(group, new NodeSimulationData(groupData, requestData));
             } else {
                 throw new IllegalStateException("Unrecognized content type: '" + type + "'");
             }
@@ -228,10 +228,12 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
 
         logger.println("[PuppetGatling] - The hash map is below.");
         logger.println("[PuppetGatling] - The values are printed as: [Total Requests, Successful Requests, Failed Requests, Mean Response Time]");
-        for (Map.Entry entry : groupDict.entrySet()){;
-            List<SimulationData> lst = groupDict.get(entry.getKey());
-            for (SimulationData sd : lst){
-                logger.println("[PuppetGatling] - The hash map key, value is: " + entry.getKey() + ", " + sd.prettyPrint());
+        for (Map.Entry groupEntry : groupDict.entrySet()){;
+            NodeSimulationData nsd = groupDict.get(groupEntry.getKey());
+            logger.println("[PuppetGatling] - Node group summary data for group '" +
+                    groupEntry.getKey() + "': " + nsd.getGroupData().prettyPrint());
+            for (SimulationData sd : nsd.getRequestData()){
+                logger.println("[PuppetGatling] - The hash map key, value is: " + groupEntry.getKey() + ", " + sd.prettyPrint());
             }
 
         }
@@ -289,13 +291,13 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
      * @return a new simulation report
      * @throws IOException
      */
-    private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, List<SimulationData>> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException, InterruptedException {
+    private SimulationReport generateSimulationReport(SimulationReport simReport, Map<String, NodeSimulationData> simulationData, FilePath workspace, String simID, List<SimulationConfig> simConfig) throws IOException, InterruptedException {
         logger.println("[PuppetGatling] - Generating simulation report data...");
         FilePath osData = new FilePath(workspace, "puppet-gatling/" + simID + "/important_data.csv");
         LineIterator it = IOUtils.lineIterator(osData.read(), "UTF-8");
 
         simReport.setName(simID);
-        simReport.setSimulationDataList(simulationData);
+        simReport.setNodeSimulationData(simulationData);
 
         try{
             while(it.hasNext()){
@@ -360,7 +362,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
      */
     private SimulationReport calculateDataPerNode(SimulationReport simulationReport){
         // should return list, since it's per node
-        Long meanRunTimePerNode;
+        int meanRunTimePerNode;
         int totalFailedRequests = 0;
         Map<String, Map<String, Long>> nodeMeanResponseTimes = new HashMap<String, Map<String, Long>>();
 
@@ -369,18 +371,19 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
         // up the class / method names a bit to make it more clear what the cardinality is between
         // a "Simulation" and a "Node".
         List<SimulationConfig> simulationConfig = simulationReport.getSimulationConfig();
-        Map<String, List<SimulationData>> simulationData = simulationReport.getSimulationDataList();
+        Map<String, NodeSimulationData> simulationData = simulationReport.getNodeSimulationData();
 
-        for (Map.Entry<String, List<SimulationData>> entry : simulationData.entrySet()) {
-            List<SimulationData> lst = simulationData.get(entry.getKey());
-            int numerator = 0;
-            if (lst.size() > 0){
-                for (SimulationData sd : lst){
-                    logger.println("[PuppetGatling] - Getting mean run time for: " + sd.getKey());
-                    numerator += sd.getTotalRequests() * sd.getMeanResponseTime();
+        for (Map.Entry<String, NodeSimulationData> entry : simulationData.entrySet()) {
+            String groupName = entry.getKey();
+            NodeSimulationData nodeSimulationData = entry.getValue();
+            SimulationData groupData = nodeSimulationData.getGroupData();
+            List<SimulationData> requestData = nodeSimulationData.getRequestData();
+            if (requestData.size() > 0){
+                for (SimulationData sd : requestData){
+                    logger.println("[PuppetGatling] - Getting mean run time for: " + sd.getKey() + " (" + sd.getMeanResponseTime() + ")");
                     totalFailedRequests += sd.getFailedRequests();
 
-                    String cat = sd.getStat().trim();
+                    String cat = sd.getRequestName().trim();
                     if (PIE_CHART_CATEGORIES.contains(cat)) {
                         addNodeMeanResponseTime(nodeMeanResponseTimes, sd.getKey(), cat, (long) sd.getMeanResponseTime());
                     }
@@ -402,8 +405,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
                     throw new IllegalStateException("[PuppetGatling] - ERROR: There is no sim config by that name");
                 }
                 else{
-                    int denominator = localSimConfig.getNumberInstances() * localSimConfig.getNumberRepetitions();
-                    meanRunTimePerNode = (long) (numerator / denominator);
+                    meanRunTimePerNode = groupData.getMeanResponseTime();
                     logger.println("[PuppetGatling] - Here is the mean run time per node of " + localSimConfig.getSimulationName() + ": " + meanRunTimePerNode);
 
 

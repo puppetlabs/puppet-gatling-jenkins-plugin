@@ -27,7 +27,7 @@ public class SimulationReport {
     private int totalFailedRequests;
     private Long totalMeanCatalogResponseTime;
     private Long totalReportResponseTime;
-    private Map<String, List<SimulationData>> simulationDataList;
+    private Map<String, NodeSimulationData> nodeSimulationData;
 
     private Map<String, Map<String, Long>> nodeMeanResponseTimes;
 
@@ -147,12 +147,12 @@ public class SimulationReport {
         this.totalReportResponseTime = totalReportResponseTime;
     }
 
-    public Map<String, List<SimulationData>> getSimulationDataList(){
-        return simulationDataList;
+    public Map<String, NodeSimulationData> getNodeSimulationData(){
+        return nodeSimulationData;
     }
 
-    public void setSimulationDataList(Map<String, List<SimulationData>> simulationDataList){
-        this.simulationDataList = simulationDataList;
+    public void setNodeSimulationData(Map<String, NodeSimulationData> nodeSimulationData){
+        this.nodeSimulationData = nodeSimulationData;
     }
 
     public Map<String, Map<String, Long>> getNodeMeanResponseTimes(){
