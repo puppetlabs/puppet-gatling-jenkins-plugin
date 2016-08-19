@@ -60,6 +60,7 @@ public class PuppetGatlingBuildAction implements Action, SimpleBuildStep.LastBui
 	 * actual logic for rendering a report.
 	 *
 	 * @param simulationName the name of the simulation
+	 * @return a renderer for the report by the given name
 	 */
 	public ReportRenderer getReport(String simulationName) {
 		return new ReportRenderer(this, getSimulation(simulationName));

@@ -65,4 +65,58 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <!--
+        yuck.  So, this profile will only be enabled if the JDK is 8 or higher.
+        Here's the deal: In Java8, there was some linting added for javadocs,
+        and it's supposed to be enabled by default... but it does not actually
+        appear to be enabled in some JDK8 builds, such as those in the ubuntu
+        14.04 PPAs.  It *is* enabled by default on OSX.
+
+        We had some javadoc issues in this repo, which were preventing the
+        project from being able to be built on OSX JDK8, even though it built
+        fine on JDK7 and Ubuntu's JDK8.
+
+        So, what we want to do here is to add a command-line arg that will
+        enable the linting on all JDK8s.  However, you *can't* pass the flag to
+        a JDK7 or it will fail because it doesn't recognize the flag.  So here,
+        we define a property containing the CLI arg, but *only* for JDK8 and
+        higher.  We can then use that property in the configuration for the
+        javadoc plugin, so that the flag will be passed for JDK8 but not JDK7.
+    -->
+    <profiles>
+        <profile>
+            <id>doclint-java8-enable</id>
+            <activation>
+                <jdk>[1.8,)</jdk>
+            </activation>
+            <properties>
+                <javadoc.opts>-Xdoclint:all</javadoc.opts>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>attach-javadocs</id>
+                            <goals>
+                                <goal>jar</goal>
+                            </goals>
+                            <configuration>
+                                <!-- see comments above 'profiles' above for an
+                                     explanation of this hack. -->
+                                <additionalparam>${javadoc.opts}</additionalparam>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

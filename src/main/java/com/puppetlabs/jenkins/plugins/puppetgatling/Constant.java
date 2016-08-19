@@ -2,7 +2,7 @@ package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 /**
  * Constant
- * <br></br>
+ * <br>
  * Location for important constant values related to the project
  * 
  * @author Brian Cain

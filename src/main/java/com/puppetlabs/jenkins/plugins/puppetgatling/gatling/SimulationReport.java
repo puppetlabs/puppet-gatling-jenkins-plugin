@@ -5,7 +5,7 @@ import java.util.*;
 
 /**
  * SimulationReport
- * <br></br>
+ * <br>
  * A given simulation report for Puppet Gatling
  * 
  * @author Brian Cain

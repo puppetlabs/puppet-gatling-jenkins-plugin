@@ -31,10 +31,10 @@ public class ReportRenderer {
    * `/report/MySimulationName` prefix.  It renders the `report.jelly`
    * template inside of the Jenkins UI.
    *
-   * @param request
-   * @param response
-   * @throws IOException
-   * @throws ServletException
+   * @param request the stapler request
+   * @param response the stapler response that is being built
+   * @throws IOException if an IO error occurs
+   * @throws ServletException if a Servlet error occurs
    */
   public void doIndex(StaplerRequest request, StaplerResponse response)
     throws IOException, ServletException {
@@ -51,10 +51,10 @@ public class ReportRenderer {
    * up content files directly from the archived simulation directory
    * on disk.
    *
-   * @param request
-   * @param response
-   * @throws IOException
-   * @throws ServletException
+   * @param request the stapler request
+   * @param response the stapler response that is being built
+   * @throws IOException if an IO error occurs
+   * @throws ServletException if a Servlet error occurs
    */
   public void doSource(StaplerRequest request, StaplerResponse response)
     throws IOException, ServletException {
