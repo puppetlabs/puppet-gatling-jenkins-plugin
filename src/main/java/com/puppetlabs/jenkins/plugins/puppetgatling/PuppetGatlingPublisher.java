@@ -400,7 +400,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
                 SimulationConfig localSimConfig = getSimConfig(simulationConfig, entry.getKey());
                 if (localSimConfig == null){
                     // needs a better way to quit out of this
-                    logger.println("[PuppetGatling] - ERROR: There is no sim config by that name");
+                    logger.println("[PuppetGatling] - ERROR: There is no sim config by the name '" + entry.getKey() + "'");
                     throw new IllegalStateException("[PuppetGatling] - ERROR: There is no sim config by that name");
                 }
                 else{
@@ -464,11 +464,14 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
      * @return returns the discovered sim config, else null if not found
      */
     private SimulationConfig getSimConfig(List<SimulationConfig> simulationConfigList, String key){
+        logger.println("Looking for simconfig: '" + key + "'");
         for (SimulationConfig simConf : simulationConfigList){
+            logger.println("\tfound simulation '" + simConf.getSimulationName() + "'");
             if (simConf.getSimulationName().equals(key)){
                 return simConf;
             }
         }
+        logger.println("Did not find simulation config!");
         return null;
     }
 
