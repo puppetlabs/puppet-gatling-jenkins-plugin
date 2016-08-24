@@ -1,4 +1,6 @@
-<j:jelly xmlns:j="jelly:core" xmlns:g="/com/excilys/ebi/gatling/jenkins/tags">
+<?jelly escape-by-default='true'?>
+
+<j:jelly xmlns:j="jelly:core" xmlns:g="/io/gatling/jenkins/tags">
 	<j:if test="${action.isVisible()}">
 		<div>
 		<h1>Puppet Gatling</h1>
@@ -15,7 +17,7 @@
             var dashboardSeriesNames = ${action.dashboardGraph.seriesNamesJSON};
             var dashboardSeriesValues = ${action.dashboardGraph.seriesJSON};
 
-            $$('#customDashboardGatling').bind('jqplotDataClick',
+            jQueryGatling('#customDashboardGatling').bind('jqplotDataClick',
                 function (ev, seriesIndex, pointIndex, data) {
                     var xAxisArr = dashboardSeriesValues[seriesIndex].reverse();
                     var url = xAxisArr[pointIndex][0] + "/gatling/report/" + dashboardSeriesNames[seriesIndex].label + "/";

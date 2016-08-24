@@ -15,9 +15,6 @@
  */
 package com.puppetlabs.jenkins.plugins.puppetgatling.chart;
 
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.SortedMap;
@@ -26,21 +23,23 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-import com.excilys.ebi.gatling.jenkins.chart.Serie;
-import com.excilys.ebi.gatling.jenkins.chart.SerieName;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
+import hudson.model.Job;
+import hudson.model.Run;
+import io.gatling.jenkins.chart.Serie;
+import io.gatling.jenkins.chart.SerieName;
 
 /**
  * Graph class
- * <br></br>
+ * <br>
  * This is what the plugin uses to generate graphs. The graph constructor goes through each
  * Puppet Gatling build action to get a report. It then gets the report name and the data value
  * and places it as a point on the given graph.
  *
  * @author Brian Cain
- * @param <Y>
+ * @param <Y> the type of numeric value to be used in the graph
  */
 public abstract class Graph<Y extends Number> {
 	private static final Logger LOGGER = Logger.getLogger(Graph.class.getName());
@@ -49,11 +48,11 @@ public abstract class Graph<Y extends Number> {
 
 	private final ObjectMapper mapper = new ObjectMapper();
 
-	public Graph(AbstractProject<?, ?> project, int maxBuildsToDisplay) {
+	public Graph(Job<?, ?> job, int maxBuildsToDisplay) {
 		int numberOfBuild = 0;
 		
-		for (AbstractBuild<?, ?> build : project.getBuilds()) {
-			PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
+		for (Run<?, ?> run : job.getBuilds()) {
+			PuppetGatlingBuildAction action = run.getAction(PuppetGatlingBuildAction.class);
 			
 			if (action != null){
 				numberOfBuild++;
@@ -63,7 +62,7 @@ public abstract class Graph<Y extends Number> {
 					if (!series.containsKey(name))
 					    series.put(name, new Serie<Integer, Y>());
 					
-					series.get(name).addPoint(build.getNumber(), getValue(requestR));
+					series.get(name).addPoint(run.getNumber(), getValue(requestR));
 				}
 			}
 			if (numberOfBuild >= maxBuildsToDisplay)

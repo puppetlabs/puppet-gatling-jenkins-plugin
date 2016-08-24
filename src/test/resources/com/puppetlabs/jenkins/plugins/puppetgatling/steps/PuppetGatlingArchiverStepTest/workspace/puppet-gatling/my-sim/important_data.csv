@@ -1,0 +1,7 @@
+processor0,Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz
+processorcount,8
+puppetversion,4.5.2
+blockdevice_sda_size,931.48 GiB
+memorysize,23.23 GiB
+gatling-puppet-load-test,a7762e7069a52706ec67d827fad64741aeefd14b
+beaker-version,beaker (2.48.1)

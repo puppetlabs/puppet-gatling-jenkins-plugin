@@ -1,0 +1,353 @@
+{
+  "aio_agent_build": "1.5.2",
+  "aio_agent_version": "1.5.2",
+  "augeas": {
+    "version": "1.4.0"
+  },
+  "choco_install_path": "C:\\ProgramData\\chocolatey",
+  "chocolateyversion": "0",
+  "custom_auth_conf": true,
+  "disks": {
+    "sda": {
+      "model": "LOGICAL VOLUME",
+      "size": "931.48 GiB",
+      "size_bytes": 1000171331584,
+      "vendor": "HP"
+    },
+    "sdb": {
+      "model": "LOGICAL VOLUME",
+      "size": "279.43 GiB",
+      "size_bytes": 300035497984,
+      "vendor": "HP"
+    }
+  },
+  "dmi": {
+    "bios": {
+      "release_date": "09/01/2013",
+      "vendor": "HP",
+      "version": "P80"
+    },
+    "chassis": {
+      "type": "Rack Mount Chassis"
+    },
+    "manufacturer": "HP",
+    "product": {
+      "name": "ProLiant DL320e Gen8 v2",
+      "serial_number": "USE346L3KS",
+      "uuid": "37323233-3135-5553-4533-34364C334B53"
+    }
+  },
+  "facterversion": "3.2.0",
+  "fake_domain": "pgtomcat.mycompany.org",
+  "filesystems": "xfs",
+  "function": "app",
+  "group": "pgtomcat",
+  "identity": {
+    "gid": 0,
+    "group": "root",
+    "uid": 0,
+    "user": "root"
+  },
+  "ip6tables_version": "1.4.21",
+  "iptables_version": "1.4.21",
+  "is_pe": true,
+  "is_virtual": false,
+  "java_default_home": "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2.x86_64",
+  "java_libjvm_path": "/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.101-3.b13.el7_2.x86_64/jre/lib/amd64/server",
+  "java_major_version": "8",
+  "java_patch_level": "101",
+  "java_version": "1.8.0_101",
+  "jenkins_plugins": "",
+  "kernel": "Linux",
+  "kernelmajversion": "3.10",
+  "kernelrelease": "3.10.0-229.el7.x86_64",
+  "kernelversion": "3.10.0",
+  "load_averages": {
+    "15m": 0.05,
+    "1m": 0.14,
+    "5m": 0.05
+  },
+  "memory": {
+    "swap": {
+      "available": "1000.00 MiB",
+      "available_bytes": 1048571904,
+      "capacity": "0%",
+      "total": "1000.00 MiB",
+      "total_bytes": 1048571904,
+      "used": "0 bytes",
+      "used_bytes": 0
+    },
+    "system": {
+      "available": "18.75 GiB",
+      "available_bytes": 20133462016,
+      "capacity": "19.27%",
+      "total": "23.23 GiB",
+      "total_bytes": 24938786816,
+      "used": "4.48 GiB",
+      "used_bytes": 4805324800
+    }
+  },
+  "mountpoints": {
+    "/": {
+      "available": "275.69 GiB",
+      "available_bytes": 296024096768,
+      "capacity": "0.77%",
+      "device": "/dev/sdb3",
+      "filesystem": "xfs",
+      "options": [
+        "rw",
+        "seclabel",
+        "relatime",
+        "attr2",
+        "inode64",
+        "logbsize=256k",
+        "sunit=512",
+        "swidth=512",
+        "noquota"
+      ],
+      "size": "277.83 GiB",
+      "size_bytes": 298312531968,
+      "used": "2.13 GiB",
+      "used_bytes": 2288435200
+    },
+    "/boot": {
+      "available": "377.93 MiB",
+      "available_bytes": 396283904,
+      "capacity": "23.07%",
+      "device": "/dev/sdb1",
+      "filesystem": "xfs",
+      "options": [
+        "rw",
+        "seclabel",
+        "relatime",
+        "attr2",
+        "inode64",
+        "logbsize=256k",
+        "sunit=512",
+        "swidth=512",
+        "noquota"
+      ],
+      "size": "491.25 MiB",
+      "size_bytes": 515112960,
+      "used": "113.32 MiB",
+      "used_bytes": 118829056
+    },
+    "/opt": {
+      "available": "929.78 GiB",
+      "available_bytes": 998342270976,
+      "capacity": "0.13%",
+      "device": "/dev/sda1",
+      "filesystem": "xfs",
+      "options": [
+        "rw",
+        "seclabel",
+        "relatime",
+        "attr2",
+        "inode64",
+        "sunit=512",
+        "swidth=512",
+        "noquota"
+      ],
+      "size": "931.02 GiB",
+      "size_bytes": 999676981248,
+      "used": "1.24 GiB",
+      "used_bytes": 1334710272
+    }
+  },
+  "networking": {
+    "dhcp": "10.0.22.10",
+    "domain": "delivery.puppetlabs.net",
+    "fqdn": "puppetserver-perf-sut54.delivery.puppetlabs.net",
+    "hostname": "puppetserver-perf-sut54",
+    "interfaces": {
+      "eno1": {
+        "bindings": [
+          {
+            "address": "10.0.150.110",
+            "netmask": "255.255.255.0",
+            "network": "10.0.150.0"
+          }
+        ],
+        "bindings6": [
+          {
+            "address": "fe80::8634:97ff:fe11:d5e4",
+            "netmask": "ffff:ffff:ffff:ffff::",
+            "network": "fe80::"
+          }
+        ],
+        "dhcp": "10.0.22.10",
+        "ip": "10.0.150.110",
+        "ip6": "fe80::8634:97ff:fe11:d5e4",
+        "mac": "84:34:97:11:d5:e4",
+        "mtu": 1500,
+        "netmask": "255.255.255.0",
+        "netmask6": "ffff:ffff:ffff:ffff::",
+        "network": "10.0.150.0",
+        "network6": "fe80::"
+      },
+      "eno2": {
+        "mac": "84:34:97:11:d5:e5",
+        "mtu": 1500
+      },
+      "lo": {
+        "bindings": [
+          {
+            "address": "127.0.0.1",
+            "netmask": "255.0.0.0",
+            "network": "127.0.0.0"
+          }
+        ],
+        "bindings6": [
+          {
+            "address": "::1",
+            "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+            "network": "::1"
+          }
+        ],
+        "ip": "127.0.0.1",
+        "ip6": "::1",
+        "mtu": 65536,
+        "netmask": "255.0.0.0",
+        "netmask6": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
+        "network": "127.0.0.0",
+        "network6": "::1"
+      }
+    },
+    "ip": "10.0.150.110",
+    "ip6": "fe80::8634:97ff:fe11:d5e4",
+    "mac": "84:34:97:11:d5:e4",
+    "mtu": 1500,
+    "netmask": "255.255.255.0",
+    "netmask6": "ffff:ffff:ffff:ffff::",
+    "network": "10.0.150.0",
+    "network6": "fe80::",
+    "primary": "eno1"
+  },
+  "os": {
+    "architecture": "x86_64",
+    "distro": {
+      "codename": "Core",
+      "description": "CentOS Linux release 7.1.1503 (Core)",
+      "id": "CentOS",
+      "release": {
+        "full": "7.1.1503",
+        "major": "7",
+        "minor": "1"
+      },
+      "specification": ":core-4.1-amd64:core-4.1-noarch:cxx-4.1-amd64:cxx-4.1-noarch:desktop-4.1-amd64:desktop-4.1-noarch:languages-4.1-amd64:languages-4.1-noarch:printing-4.1-amd64:printing-4.1-noarch"
+    },
+    "family": "RedHat",
+    "hardware": "x86_64",
+    "name": "CentOS",
+    "release": {
+      "full": "7.1.1503",
+      "major": "7",
+      "minor": "1"
+    },
+    "selinux": {
+      "config_mode": "enforcing",
+      "current_mode": "enforcing",
+      "enabled": true,
+      "enforced": true,
+      "policy_version": "28"
+    }
+  },
+  "package_provider": "yum",
+  "partitions": {
+    "/dev/sda1": {
+      "filesystem": "xfs",
+      "mount": "/opt",
+      "size": "931.48 GiB",
+      "size_bytes": 1000169537536,
+      "uuid": "9a05f68e-ec79-49a7-bd1a-2bb5390c43e8"
+    },
+    "/dev/sdb1": {
+      "filesystem": "xfs",
+      "mount": "/boot",
+      "size": "500.00 MiB",
+      "size_bytes": 524288000,
+      "uuid": "ff7a33d9-7dc3-4a1c-981d-92ac5667affa"
+    },
+    "/dev/sdb2": {
+      "filesystem": "swap",
+      "size": "1000.00 MiB",
+      "size_bytes": 1048576000,
+      "uuid": "26c832ec-f31e-49f8-b286-a0430dece756"
+    },
+    "/dev/sdb3": {
+      "filesystem": "xfs",
+      "mount": "/",
+      "size": "277.96 GiB",
+      "size_bytes": 298461429760,
+      "uuid": "03ce7628-91ae-4f37-80a5-c960e35f5b0a"
+    }
+  },
+  "path": "/usr/lib64/qt-3.3/bin:$PATH:PATH:/opt/puppetlabs/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin:/sbin",
+  "pe_build": "2016.2.0",
+  "pe_concat_basedir": "/opt/puppetlabs/puppet/cache/pe_concat",
+  "pe_razor_server_version": "package pe-razor-server is not installed",
+  "pe_server_version": "2016.2.0",
+  "platform_symlink_writable": true,
+  "platform_tag": "el-7-x86_64",
+  "processors": {
+    "count": 8,
+    "isa": "x86_64",
+    "models": [
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz",
+      "Intel(R) Xeon(R) CPU E3-1280 v3 @ 3.60GHz"
+    ],
+    "physicalcount": 1,
+    "speed": "3.60 GHz"
+  },
+  "puppet_files_dir_present": true,
+  "puppet_vardir": "/opt/puppetlabs/puppet/cache",
+  "puppetversion": "4.5.2",
+  "root_home": "/root",
+  "rsyslog_version": "7.4.7",
+  "ruby": {
+    "platform": "x86_64-linux",
+    "sitedir": "/opt/puppetlabs/puppet/lib/ruby/site_ruby/2.1.0",
+    "version": "2.1.9"
+  },
+  "service_provider": "systemd",
+  "ssh": {
+    "ecdsa": {
+      "fingerprints": {
+        "sha1": "SSHFP 3 1 5beb46cd98195ce1c4fed81a8ff425e422e1d6cc",
+        "sha256": "SSHFP 3 2 7697db86677f8c00791a5149e5acc71f1b83566f3931420f70ef4a87105d05b6"
+      },
+      "key": "AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBEli7aHBLSZRGQz6KdlrhEB326oWW6yrByWL1RpGPfySc7FXG2tZJTSrKgod+Lw+K+DoYFEyM6UIJUIJsVBisfw="
+    },
+    "ed25519": {
+      "fingerprints": {
+        "sha1": "SSHFP 4 1 1126bb96bff1fb6c2f2424b04858d55557ea24d1",
+        "sha256": "SSHFP 4 2 f2640943caabcce2af645d2f3ea59be204e5ce590d91d9a8fd9ff54656c5c3fb"
+      },
+      "key": "AAAAC3NzaC1lZDI1NTE5AAAAIDyqAkVsUZUfdIbtG1eDJAkmO6FooWeqXLuas0EPmCZc"
+    },
+    "rsa": {
+      "fingerprints": {
+        "sha1": "SSHFP 1 1 84e99fb9051c857393d9b006c1a9e9b63b96de0f",
+        "sha256": "SSHFP 1 2 dc163b7dda7024983305041b652c2c8ede092dfef41811fb3154ac80273ebefe"
+      },
+      "key": "AAAAB3NzaC1yc2EAAAADAQABAAABAQCmGyIEtN5KIXNTMhPqBnI0wO9u+0BfxXc1i1uIhsSECcxVZqLCP2PXd378VLBqQvpqdVpiQqZHoM+P2f+iwx6xaQn5kVLb7JnHe4IEh/TynMN1w9uF2PChfwhpvAxxPp2LtF4q8hSzRkwVHpax75AeqDS6TScPP31QBt9Nr4q7MZfKsAzbfAk1jxHqUS7oIv+BBm5hGwiVvw/wgrRGakW/GFzLJ7glY4r7o3v2La+7QWCmVHJRBczfccSzWtv/g8fFtZF80Oj9POe0zY/MqIyPv1yoY84lFo+0Gt0NNENyWuxhsF9SumdXahr4wnpIXSpdfT4VOblAJ+KS45/KdKdV"
+    }
+  },
+  "stage": "prod",
+  "staging_http_get": "curl",
+  "system_uptime": {
+    "days": 1,
+    "hours": 47,
+    "seconds": 171655,
+    "uptime": "1 day"
+  },
+  "timezone": "PDT",
+  "virtual": "physical",
+  "whereami": "portland"
+}

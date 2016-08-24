@@ -1,9 +1,8 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
-import hudson.model.AbstractBuild;
-import hudson.model.AbstractProject;
 import hudson.model.Action;
+import hudson.model.Job;
 import hudson.model.Run;
 import java.util.*;
 
@@ -12,7 +11,7 @@ import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
 
 /**
  * <h2>Puppet Gatling Project Action</h2>
- * <br></br>
+ * <br>
  * This file relates to the three jelly files
  *
  * 	<ul>
@@ -21,14 +20,14 @@ import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
  * 	</ul>
  * 
  * <h3>floatingBox.jelly</h3>
- *  <br></br>
+ *  <br>
  * 	This jelly file is responsible for the side panel on any given job in Jenkins with Puppet-Gating 
  * 	installed as a plugin and added as a post build. If a build is available, it will display a 
  * 	graph on the side with Mean Agent Run Time. The jelly file calls the function below to 
  *  obtain that graph.
  *  
  * <h3>index.jelly</h3>
- * <br></br>
+ * <br>
  * 	This jelly file is what will be displayed when you click on "Puppet Gatling" on the main job page.
  *  It obtains graphs similar to floatingBox.jelly, with the functions below.
  * 
@@ -36,23 +35,23 @@ import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
  */
 public class PuppetGatlingProjectAction implements Action {
 
-    private final AbstractProject<?, ?> project;
+    private final Job<?, ?> job;
 
-    public PuppetGatlingProjectAction(AbstractProject<?, ?> project) {
-        this.project = project;
+    public PuppetGatlingProjectAction(Job<?, ?> job) {
+        this.job = job;
     }
 
     private Run getLastSuccessfulBuild() {
-        return project.getLastSuccessfulBuild();
+        return job.getLastSuccessfulBuild();
     }
     
-    public AbstractProject<?, ?> getProject() {
-    	return project;
+    public Job<?, ?> getJob() {
+    	return job;
     }
-    
+
     public boolean isVisible() {
-		for (AbstractBuild<?, ?> build : getProject().getBuilds()) {
-			PuppetGatlingBuildAction gatlingBuildAction = build.getAction(PuppetGatlingBuildAction.class);
+		for (Run<?, ?> run: getJob().getBuilds()) {
+			PuppetGatlingBuildAction gatlingBuildAction = run.getAction(PuppetGatlingBuildAction.class);
 			if (gatlingBuildAction != null) {
 				return true;
 			}
@@ -70,7 +69,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
     
     public Graph<Long> getdashboardGraph() {
-    	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanAgentRunTime();
@@ -79,7 +78,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
     
     public Graph<Long> getagentRunTime(){
-    	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanAgentRunTime();
@@ -88,7 +87,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
     
     public Graph<Long> getcatalogCompileTime(){
-    	return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanCatalogResponseTime();
@@ -97,7 +96,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
 
     public Graph<Long> getreportRequestTime(){
-        return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+        return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
             @Override
             public Long getValue(SimulationReport requestReport) {
                 return requestReport.getTotalReportResponseTime();
@@ -106,7 +105,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
 
     public Graph<Long> getFailedRequests(){
-        return new Graph<Long>(project, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+        return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
             @Override
             public Long getValue(SimulationReport requestReport) {
                 return (long) requestReport.getTotalFailedRequests();
@@ -126,17 +125,17 @@ public class PuppetGatlingProjectAction implements Action {
 		return URL_NAME;
 	}
 
-    public Map<AbstractBuild<?, ?>, List<String>> getReports() {
-        Map<AbstractBuild<?, ?>, List<String>> reports = new LinkedHashMap<AbstractBuild<?, ?>, List<String>>();
+    public Map<Run<?, ?>, List<String>> getReports() {
+        Map<Run<?, ?>, List<String>> reports = new LinkedHashMap<Run<?, ?>, List<String>>();
 
-        for (AbstractBuild<?, ?> build : project.getBuilds()) {
-            PuppetGatlingBuildAction action = build.getAction(PuppetGatlingBuildAction.class);
+        for (Run<?, ?> run : job.getBuilds()) {
+            PuppetGatlingBuildAction action = run.getAction(PuppetGatlingBuildAction.class);
             if (action != null) {
                 List<String> simNames = new ArrayList<String>();
                 for (SimulationReport sim : action.getSimulationReportList()) {
                     simNames.add(sim.getName());
                 }
-                reports.put(build, simNames);
+                reports.put(run, simNames);
             }
         }
 
