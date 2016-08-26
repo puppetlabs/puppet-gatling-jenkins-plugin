@@ -70,6 +70,7 @@ public abstract class SimulationGraph<Y extends Number> implements Graph<Y> {
 		}
 	}
 
+	// TODO: push up into base class
 	public String getSeriesNamesJSON() {
 		String json = null;
 
