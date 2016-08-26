@@ -1,12 +1,14 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
+
+import com.puppetlabs.jenkins.plugins.puppetgatling.chart.Graph;
+import com.puppetlabs.jenkins.plugins.puppetgatling.chart.SimulationGraph;
 import hudson.model.Action;
 import hudson.model.Job;
 import hudson.model.Run;
 import java.util.*;
 
-import com.puppetlabs.jenkins.plugins.puppetgatling.chart.Graph;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.*;
 
 /**
@@ -68,8 +70,8 @@ public class PuppetGatlingProjectAction implements Action {
         return latestSuccessfulBuild.getNumber();
     }
     
-    public Graph<Long> getdashboardGraph() {
-    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    public Graph<Long> getDashboardGraph() {
+    	return new SimulationGraph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanAgentRunTime();
@@ -77,8 +79,8 @@ public class PuppetGatlingProjectAction implements Action {
 		};
     }
     
-    public Graph<Long> getagentRunTime(){
-    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    public Graph<Long> getAgentRunTime(){
+    	return new SimulationGraph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanAgentRunTime();
@@ -86,8 +88,8 @@ public class PuppetGatlingProjectAction implements Action {
 		};
     }
     
-    public Graph<Long> getcatalogCompileTime(){
-    	return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    public Graph<Long> getCatalogCompileTime(){
+    	return new SimulationGraph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
 			@Override
 			public Long getValue(SimulationReport requestReport) {
 				return requestReport.getTotalMeanCatalogResponseTime();
@@ -95,8 +97,8 @@ public class PuppetGatlingProjectAction implements Action {
 		};
     }
 
-    public Graph<Long> getreportRequestTime(){
-        return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+    public Graph<Long> getReportRequestTime(){
+        return new SimulationGraph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
             @Override
             public Long getValue(SimulationReport requestReport) {
                 return requestReport.getTotalReportResponseTime();
@@ -105,7 +107,7 @@ public class PuppetGatlingProjectAction implements Action {
     }
 
     public Graph<Long> getFailedRequests(){
-        return new Graph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
+        return new SimulationGraph<Long>(job, MAX_BUILDS_TO_DISPLAY_DASHBOARD) {
             @Override
             public Long getValue(SimulationReport requestReport) {
                 return (long) requestReport.getTotalFailedRequests();
