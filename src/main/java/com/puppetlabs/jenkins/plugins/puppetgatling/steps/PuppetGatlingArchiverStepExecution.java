@@ -24,7 +24,7 @@ public class PuppetGatlingArchiverStepExecution extends AbstractSynchronousNonBl
 
     @Override
     protected Void run() throws Exception {
-        System.out.println("Running Puppet Gatling Archiver step");
+        listener.getLogger().println("Running Puppet Gatling Archiver step");
 
         PuppetGatlingPublisher publisher = new PuppetGatlingPublisher(true);
         publisher.perform(build, ws, launcher, listener);
