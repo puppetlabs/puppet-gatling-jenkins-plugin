@@ -67,7 +67,15 @@ public class PuppetGatlingBuildAction implements Action, SimpleBuildStep.LastBui
 	}
 
 	public String getReportURL(String simulationName) {
-		return new StringBuilder().append(URL_NAME).append("/report/").append(simulationName).toString();
+		return new StringBuilder().append("job/").
+				append(run.getParent().getName()).
+				append("/").
+				append(run.getNumber()).
+				append("/").
+				append(URL_NAME).
+				append("/report/").
+				append(simulationName).
+				toString();
 	}
 
 	private BuildSimulation getSimulation(String simulationName) {
