@@ -122,17 +122,19 @@
                         <td><div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div></td>
                     </tr>
                 </j:forEach>
-                <tr>
-                    <td colspan="3">
-                        <table width="100%">
-                            <td width="100%">
-                                <h3>Run Memory Usage</h3>
-                                <g:graph id="memoryUsage" seriesNames="${it.memoryUsage.seriesNamesJSON}"
-                                         data="${it.memoryUsage.seriesJSON}" yAxisUnit="MB" height="400px" width="100%"/>
-                            </td>
-                        </table>
-                    </td>
-                </tr>
+                <j:if test="${it.memoryUsage != null}">
+                    <tr>
+                        <td colspan="3">
+                            <table width="100%">
+                                <td width="100%">
+                                    <h3>Run Memory Usage</h3>
+                                    <g:graph id="memoryUsage" seriesNames="${it.memoryUsage.seriesNamesJSON}"
+                                             data="${it.memoryUsage.seriesJSON}" yAxisUnit="MB" height="400px" width="100%"/>
+                                </td>
+                            </table>
+                        </td>
+                    </tr>
+                </j:if>
             </table>
             <p></p>
         </j:forEach>

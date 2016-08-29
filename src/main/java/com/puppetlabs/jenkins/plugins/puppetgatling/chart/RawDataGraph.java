@@ -6,8 +6,6 @@ import io.gatling.jenkins.chart.Serie;
 import io.gatling.jenkins.chart.SerieName;
 
 import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 
 import java.io.IOException;

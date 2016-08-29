@@ -86,15 +86,19 @@ public class PuppetGatlingBuildAction implements Action, SimpleBuildStep.LastBui
 	}
 
 	public Graph<Long> getMemoryUsage() {
-		List<Point<Integer, Long>> memoryData = new ArrayList<>();
-		SerieName memSeriesName = new SerieName("memory");
-		for (int i = 0; i < 1000; i++) {
-			memoryData.add(new Point<Integer, Long>(i, (long) (2000 + (-100 + (Math.random() * 200)))));
-		}
-		Map<SerieName, Serie<Integer, Long>> fakeData = new TreeMap<>();
-		fakeData.put(memSeriesName, RawDataGraph.filterDataToSeries(memoryData, MAX_MEMORY_DATA_POINTS_TO_DISPLAY));
+		if (false) {
+			List<Point<Integer, Long>> memoryData = new ArrayList<>();
+			SerieName memSeriesName = new SerieName("memory");
+			for (int i = 0; i < 1000; i++) {
+				memoryData.add(new Point<Integer, Long>(i, (long) (2000 + (-100 + (Math.random() * 200)))));
+			}
+			Map<SerieName, Serie<Integer, Long>> fakeData = new TreeMap<>();
+			fakeData.put(memSeriesName, RawDataGraph.filterDataToSeries(memoryData, MAX_MEMORY_DATA_POINTS_TO_DISPLAY));
 
-		return new RawDataGraph<Long>(fakeData);
+			return new RawDataGraph<Long>(fakeData);
+		} else {
+			return null;
+		}
 	}
 
 	private BuildSimulation getSimulation(String simulationName) {
