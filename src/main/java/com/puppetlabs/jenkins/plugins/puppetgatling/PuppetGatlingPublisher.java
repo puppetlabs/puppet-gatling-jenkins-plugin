@@ -252,7 +252,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
                 String[] pathSplit = path.split(" / ");
                 String group = pathSplit[0];
                 String request = pathSplit[1];
-                System.out.println("FOUND REQUEST: '" + group + "', '" + request + "'");
+                logger.println("FOUND REQUEST: '" + group + "', '" + request + "'");
                 if (!group.equals(origGroup)) {
                     throw new IllegalStateException("Expected group '" + origGroup + "', found '" + group + "'");
                 }
@@ -301,7 +301,7 @@ public class PuppetGatlingPublisher extends Recorder implements SimpleBuildStep 
         try{
             while(it.hasNext()){
                 String line = it.nextLine();
-                System.out.println("PARSING LINE: '" + line + "'");
+                logger.println("PARSING LINE: '" + line + "'");
                 String[] tokens = line.split(",");
                 String key = tokens[0];
                 String osStatistic = tokens[1];
