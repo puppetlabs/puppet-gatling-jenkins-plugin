@@ -1,10 +1,14 @@
-package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
+package com.puppetlabs.jenkins.plugins.puppetgatling;
 
 import static com.puppetlabs.jenkins.plugins.puppetgatling.Constant.*;
 
 import java.util.*;
 
+import com.puppetlabs.jenkins.plugins.puppetgatling.SimulationMetrics;
 import com.puppetlabs.jenkins.plugins.puppetgatling.PuppetGatlingProjectAction;
+import com.puppetlabs.jenkins.plugins.puppetgatling.chart.Graph;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.ReportRenderer;
+import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 import hudson.model.Action;
 import hudson.model.Run;
 import io.gatling.jenkins.BuildSimulation;
@@ -16,7 +20,6 @@ import jenkins.tasks.SimpleBuildStep;
  * @author Brian Cain
  */
 public class PuppetGatlingBuildAction implements Action, SimpleBuildStep.LastBuildAction {
-	
 	private final Run<?, ?> run;
 	private final List<SimulationReport> simulationReportList;
 	private final List<BuildSimulation> sims;

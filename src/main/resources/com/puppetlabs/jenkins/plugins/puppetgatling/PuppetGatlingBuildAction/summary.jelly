@@ -1,7 +1,8 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler"
          xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson"
-         xmlns:f="/lib/form" xmlns:i="jelly:fmt">
+         xmlns:f="/lib/form" xmlns:i="jelly:fmt"
+         xmlns:g="/io/gatling/jenkins/tags">
     <t:summary icon="/plugin/gatling/img/logo.png">
         <b>Available Reports:</b>
         <ul>
@@ -13,6 +14,7 @@
         </ul>
     </t:summary>
     <t:summary icon="/plugin/puppet-gatling-jenkins-plugin/img/puppet.png">
+        <g:import/>
         <script type="text/javascript" src="../../../plugin/puppet-gatling-jenkins-plugin/js/google-jsapi.js"></script>
         <script type="text/javascript">
             google.load("visualization", "1", {packages:["corechart"]});
@@ -120,6 +122,19 @@
                         <td><div id="${sim.name}${node.key}" style="width: 400px; height: 300px;"></div></td>
                     </tr>
                 </j:forEach>
+                <j:if test="${sim.metrics.memoryUsage != null}">
+                    <tr>
+                        <td colspan="3">
+                            <table width="100%">
+                                <td width="100%">
+                                    <h3>Run Memory Usage</h3>
+                                    <g:graph id="memoryUsage" seriesNames="${sim.metrics.memoryUsage.seriesNamesJSON}"
+                                             data="${sim.metrics.memoryUsage.seriesJSON}" yAxisUnit="MB" height="400px" width="100%"/>
+                                </td>
+                            </table>
+                        </td>
+                    </tr>
+                </j:if>
             </table>
             <p></p>
         </j:forEach>
