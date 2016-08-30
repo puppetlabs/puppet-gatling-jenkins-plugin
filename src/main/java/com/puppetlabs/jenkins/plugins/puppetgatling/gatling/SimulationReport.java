@@ -1,6 +1,7 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
-import com.puppetlabs.jenkins.plugins.puppetgatling.*;
+import com.puppetlabs.jenkins.plugins.puppetgatling.SimulationMetrics;
+
 import java.util.*;
 
 /**
@@ -20,7 +21,7 @@ public class SimulationReport {
     private String memSize;
     private String beakerVersion;
     private String gatlingPuppetLoadTestSHA;
-    private String facterData;
+    private String simConfigDataString;
 
     private List<SimulationConfig> simulationConfig;
     private Long totalMeanAgentRunTime;
@@ -30,6 +31,7 @@ public class SimulationReport {
     private Map<String, NodeSimulationData> nodeSimulationData;
 
     private Map<String, Map<String, Long>> nodeMeanResponseTimes;
+    private SimulationMetrics metrics;
 
     public Long getOtherResponseTime(){
         return (this.totalMeanAgentRunTime - (this.totalMeanCatalogResponseTime + this.totalReportResponseTime));
@@ -99,12 +101,12 @@ public class SimulationReport {
         this.gatlingPuppetLoadTestSHA = gatlingPuppetLoadTestSHA;
     }
 
-    public String getFacterData(){
-        return facterData;
+    public String getSimConfigDataString(){
+        return simConfigDataString;
     }
 
-    public void setFacterData(String facterData){
-        this.facterData = facterData;
+    public void setSimConfigDataString(String simConfigDataString){
+        this.simConfigDataString = simConfigDataString;
     }
 
     public List<SimulationConfig> getSimulationConfig(){
@@ -161,5 +163,13 @@ public class SimulationReport {
 
     public void setNodeMeanResponseTimes(Map<String, Map<String, Long>> nodeMeanResponseTimes){
         this.nodeMeanResponseTimes = nodeMeanResponseTimes;
+    }
+
+    public SimulationMetrics getMetrics() {
+        return this.metrics;
+    }
+
+    public void setMetrics(SimulationMetrics metrics) {
+        this.metrics = metrics;
     }
 }

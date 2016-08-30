@@ -21,6 +21,10 @@ public class RawDataGraph<Y extends Number> implements Graph<Y> {
 
     public static <Y extends Number> Serie<Integer, Y>
         filterDataToSeries(List<Point<Integer, Y>> data, int maxDataPoints) {
+        if (data.size() < maxDataPoints) {
+            maxDataPoints = data.size();
+        }
+
         Serie<Integer, Y> filteredSeries = new Serie<>();
         int filterStep = 1;
         if (data.size() > maxDataPoints) {

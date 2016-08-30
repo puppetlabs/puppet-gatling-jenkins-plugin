@@ -1,4 +1,4 @@
-package com.puppetlabs.jenkins.plugins.puppetgatling;
+package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
 import java.util.List;
 

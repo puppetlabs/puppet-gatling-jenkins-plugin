@@ -1,5 +1,6 @@
 package com.puppetlabs.jenkins.plugins.puppetgatling.gatling;
 
+import com.puppetlabs.jenkins.plugins.puppetgatling.PuppetGatlingBuildAction;
 import hudson.model.Action;
 import hudson.model.DirectoryBrowserSupport;
 import io.gatling.jenkins.BuildSimulation;

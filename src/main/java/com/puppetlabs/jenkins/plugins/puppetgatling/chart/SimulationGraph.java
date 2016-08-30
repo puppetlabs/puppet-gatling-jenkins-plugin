@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.PuppetGatlingBuildAction;
+import com.puppetlabs.jenkins.plugins.puppetgatling.PuppetGatlingBuildAction;
 import com.puppetlabs.jenkins.plugins.puppetgatling.gatling.SimulationReport;
 import hudson.model.Job;
 import hudson.model.Run;
