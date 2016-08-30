@@ -53,6 +53,7 @@ public class SimulationMetrics {
                 memoryData.add(new Point<Integer, Long>(i, usedHeapValue / BYTES_PER_MEGABYTE));
                 jsonParser.nextToken();
             }
+            metricsInput.close();
 
             SerieName memSeriesName = new SerieName("memory");
             Map<SerieName, Serie<Integer, Long>> fakeData = new TreeMap<>();
