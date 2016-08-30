@@ -37,8 +37,8 @@ public class PuppetGatlingArchiverStepTest extends Assert {
         foo.setDefinition(new CpsFlowDefinition(StringUtils.join(Arrays.asList(
                 "node {",
                 "  sh 'pwd'",
-                "  sh 'cp -r " + sampleWorkspaceDir + "/* .'",
                 "  sh 'sleep 1'",
+                "  sh 'cp -r " + sampleWorkspaceDir + "/* .'",
                 "  sh 'ls -l'",
                 "  puppetGatlingArchive()",
                 "}"), "\n")));
