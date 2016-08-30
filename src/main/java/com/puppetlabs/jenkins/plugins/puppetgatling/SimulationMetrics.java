@@ -73,7 +73,8 @@ public class SimulationMetrics {
             String key = strings[i];
             next = (Map) next.get(key);
         }
-        return (Long) next.get(strings[strings.length - 1]);
+        Object value = next.get(strings[strings.length - 1]);
+        return value.getClass() == Integer.class ? ((Integer) value).longValue() : (Long) value;
     }
 
     public Graph<Long> getMemoryUsage() {
