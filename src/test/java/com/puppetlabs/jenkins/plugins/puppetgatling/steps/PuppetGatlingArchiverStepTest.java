@@ -56,7 +56,7 @@ public class PuppetGatlingArchiverStepTest extends Assert {
 
         assertFalse("Original simulation log file '" + origSimulationLog + "' should not exist",
                 origSimulationLog.exists());
-        assertTrue("Compressed simulation log file '" + origSimulationLog + "' should exist",
+        assertTrue("Compressed simulation log file '" + compressedSimulationLog + "' should exist",
                 compressedSimulationLog.exists());
 
         assertEquals("/plugin/puppet-gatling-jenkins-plugin/img/puppet.png", pgba.getIconFileName());
