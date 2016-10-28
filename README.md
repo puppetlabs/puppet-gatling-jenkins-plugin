@@ -60,7 +60,13 @@ If you are ready to deploy to a _real_ jenkins server, and not the development o
 
 The resulting packaged plugin should be located in the _target_ directory in the root dir of the project. It should have something like _puppet-gatling-jenkins-plugin.jar_ and _puppet-gatling-jenkins-plugin.hpi_.
 
+You can deploy it to the PL nexus server via (assuming you have your credentials set up properly in your `~/.m2/settings.xml` and `~/.m2/settings-security.xml`; see [the maven docs on deployment settings](https://maven.apache.org/guides/mini/guide-deployment-security-settings.html) for more info):
+
+    $ mvn deploy
+
 Now that we have the packaged plugin, we must upload it to the Jenkins server. To do this, click on the link "Manage Jenkins" on the left hand side of the Jenkins Dashboard. Then go to "Manage Plugins", and click the "Advanced" tab. There should be a heading called "Upload Plugin". Here is where you will upload the puppet-gatling-jenkins-plugin.hpi file we created. Once you do this, the plugin should be installed on the Jenkins server.
+
+Alternately if you are managing your Jenkins instance via Puppet, you can specify the plugin and version in your Puppet code.
 
 ## Note About Release
 
